@@ -25,5 +25,18 @@ export function toggleTheme() {
 
 // Inline script for SSR to prevent flash of unstyled theme.
 export const themeInitScript = `
-(function(){try{var k='${STORAGE_KEY}';var t=localStorage.getItem(k);if(t!=='light'&&t!=='dark')t='dark';if(t==='dark')document.documentElement.classList.add('dark');}catch(e){document.documentElement.classList.add('dark');}})();
+(function(){
+  try{
+    var k='${STORAGE_KEY}';
+    var t=localStorage.getItem(k);
+    if(t!=='light'&&t!=='dark')t='dark';
+    if(t==='dark')document.documentElement.classList.add('dark');
+    
+    if(localStorage.getItem('sidebar-collapsed')==='true'){
+      document.documentElement.classList.add('sidebar-collapsed');
+    }
+  }catch(e){
+    document.documentElement.classList.add('dark');
+  }
+})();
 `;

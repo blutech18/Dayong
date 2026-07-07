@@ -20,8 +20,13 @@ export const Route = createFileRoute("/_shell")({
 
 function ShellLayout() {
   const [open, setOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
   const [shortcuts, setShortcuts] = useState(false);
+
+  const handleToggleCollapse = () => {
+    const root = document.documentElement;
+    const isCollapsed = root.classList.toggle("sidebar-collapsed");
+    localStorage.setItem("sidebar-collapsed", String(isCollapsed));
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -44,8 +49,7 @@ function ShellLayout() {
       <AppSidebar 
         open={open} 
         onClose={() => setOpen(false)} 
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed(c => !c)}
+        onToggleCollapse={handleToggleCollapse}
       />
       <div className="flex min-w-0 flex-1 flex-col transition-all duration-300">
         <AppTopbar 

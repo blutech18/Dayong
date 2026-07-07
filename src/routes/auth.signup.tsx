@@ -17,7 +17,7 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="font-display text-3xl font-semibold tracking-tight">Create your account</h1>
         <p className="mt-2 text-sm text-muted-foreground">Join the DAYONG community management platform.</p>
@@ -32,7 +32,7 @@ function SignupPage() {
             navigate({ to: "/auth/login" });
           }, 600);
         }}
-        className="space-y-5"
+        className="space-y-4"
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-2">
@@ -44,22 +44,28 @@ function SignupPage() {
             <Input placeholder="Dela Cruz" className="bg-transparent" required />
           </div>
         </div>
+        
         <div className="grid gap-2">
           <Label>Email address</Label>
           <Input type="email" placeholder="you@example.com" className="bg-transparent" required />
         </div>
-        <div className="grid gap-2">
-          <Label>Password</Label>
-          <Input type="password" placeholder="At least 8 characters" className="bg-transparent" required />
+        
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-2">
+            <Label>Password</Label>
+            <Input type="password" placeholder="8+ chars" className="bg-transparent" required />
+          </div>
+          <div className="grid gap-2">
+            <Label>Confirm password</Label>
+            <Input type="password" placeholder="Repeat" className="bg-transparent" required />
+          </div>
         </div>
-        <div className="grid gap-2">
-          <Label>Confirm password</Label>
-          <Input type="password" placeholder="Repeat password" className="bg-transparent" required />
-        </div>
-        <label className="flex items-start gap-3 text-xs text-muted-foreground pt-2">
+        
+        <label className="flex items-start gap-3 text-xs text-muted-foreground pt-1">
           <Checkbox className="mt-0.5" required />
           <span className="leading-relaxed">I agree to the DAYONG <a className="underline hover:text-foreground cursor-pointer transition-colors">terms of service</a> and <a className="underline hover:text-foreground cursor-pointer transition-colors">privacy policy</a>.</span>
         </label>
+        
         <Button type="submit" size="lg" className="w-full mt-2" disabled={loading}>
           {loading ? "Creating account…" : "Create account"}
         </Button>

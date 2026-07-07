@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Search, Bell, Sun, Moon, Menu, ChevronRight, Plus, Command, LogOut,
+  Search, Bell, Sun, Moon, Menu, ChevronRight, Plus, Command, LogOut, ChevronDown
 } from "lucide-react";
 import {
   AlertDialog,
@@ -14,6 +14,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -105,32 +112,29 @@ export function AppTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
         </div>
 
 
-        <Button size="sm" className="hidden gap-1.5 sm:inline-flex">
-          <Plus className="h-4 w-4" /> New
-        </Button>
+
 
         <Button size="icon" variant="ghost" onClick={toggle} aria-label="Toggle theme">
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <Sheet>
+          <SheetTrigger asChild>
             <Button size="icon" variant="ghost" className="relative" aria-label="Notifications">
               <Bell className="h-4 w-4" />
               {unread > 0 && (
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
               )}
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-96">
-            <DropdownMenuLabel className="flex items-center justify-between">
-              <span>Notifications</span>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0 flex flex-col border-l">
+            <div className="flex items-center gap-2 px-6 py-4 border-b">
+              <SheetTitle className="text-base font-semibold">Notifications</SheetTitle>
               <Badge variant="secondary" className="text-[10px]">{unread} new</Badge>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="max-h-80 overflow-y-auto">
-              {mockNotifs.slice(0, 5).map((n) => (
-                <DropdownMenuItem key={n.id} className="flex-col items-start gap-1 py-2.5">
+            </div>
+            <div className="flex-1 overflow-y-auto scroll-thin">
+              {mockNotifs.map((n) => (
+                <div key={n.id} className="flex flex-col items-start gap-1 p-5 border-b border-border/50 hover:bg-muted/30 transition-colors">
                   <div className="flex w-full items-center gap-2">
                     <span className={cn(
                       "h-1.5 w-1.5 shrink-0 rounded-full",
@@ -139,23 +143,24 @@ export function AppTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
                       n.type === "danger" && "bg-destructive",
                       n.type === "info" && "bg-info",
                     )} />
-                    <div className="min-w-0 flex-1 truncate text-sm font-medium">{n.title}</div>
-                    {!n.read && <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
+                    <div className="min-w-0 flex-1 text-sm font-medium">{n.title}</div>
+                    {!n.read && <div className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
                   </div>
-                  <p className="line-clamp-2 text-xs text-muted-foreground">{n.body}</p>
-                </DropdownMenuItem>
+                  <p className="text-sm text-muted-foreground mt-1 ml-3.5">{n.body}</p>
+                </div>
               ))}
             </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="justify-center text-sm font-medium text-primary">
-              <Link to="/notifications">View all notifications</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <div className="p-4 border-t mt-auto">
+              <Button variant="outline" className="w-full text-primary" asChild>
+                <Link to="/notifications">View all notifications</Link>
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-lg p-1 pr-2 hover:bg-accent">
+            <button className="flex items-center gap-2 rounded-lg p-1 pr-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
                   AS
@@ -165,6 +170,7 @@ export function AppTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
                 <div className="text-xs font-semibold">Admin Santos</div>
                 <div className="text-[10px] text-muted-foreground">Administrator</div>
               </div>
+              <ChevronDown className="h-4 w-4 text-muted-foreground opacity-50" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
@@ -180,27 +186,7 @@ export function AppTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="icon" variant="ghost" aria-label="Sign out">
-              <LogOut className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Sign Out</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to sign out of your account?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <Link to="/auth/login">Sign out</Link>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
       </div>
     </header>
   );

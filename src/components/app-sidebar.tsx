@@ -41,15 +41,12 @@ const groups = [
     label: "System",
     items: [
       { to: "/staff", label: "Staff & Roles", icon: UsersRound },
-      { to: "/notifications", label: "Notifications", icon: Bell, badge: "3" },
       { to: "/audit", label: "Audit Logs", icon: ScrollText },
-      { to: "/settings", label: "Settings", icon: Settings },
-      { to: "/profile", label: "Profile", icon: UserCircle },
     ],
   },
 ] as const;
 
-export function AppSidebar({ open, onClose, collapsed, onToggleCollapse }: { open: boolean; onClose: () => void; collapsed?: boolean; onToggleCollapse?: () => void }) {
+export function AppSidebar({ open, onClose, onToggleCollapse }: { open: boolean; onClose: () => void; onToggleCollapse?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -67,27 +64,27 @@ export function AppSidebar({ open, onClose, collapsed, onToggleCollapse }: { ope
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 lg:sticky lg:top-0 lg:h-screen",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-          collapsed ? "w-[4.5rem]" : "w-72"
+          "w-72 [.sidebar-collapsed_&]:w-[4.5rem]"
         )}
       >
         <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border pl-5">
           <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-sm">
             <Sparkles className="h-4 w-4" />
           </div>
-          <div className={cn("flex flex-col min-w-0 overflow-hidden transition-all duration-300", collapsed ? "w-0 opacity-0 ml-0" : "w-[200px] opacity-100 ml-3")}>
+          <div className="flex flex-col min-w-0 overflow-hidden transition-all duration-300 w-[200px] opacity-100 ml-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0 [.sidebar-collapsed_&]:ml-0">
             <div className="truncate text-sm font-semibold tracking-tight">DAYONG</div>
             <div className="truncate text-[11px] text-muted-foreground">Member Assistance System</div>
           </div>
         </div>
 
-        <nav className="scroll-thin flex-1 overflow-y-auto px-3 py-4">
+        <nav className="flex-1 overflow-y-auto px-4 py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {groups.map((group) => (
-            <div key={group.label} className="mb-5">
-              <div className="relative mb-2 mt-4 px-2">
-                <div className={cn("text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80 overflow-hidden whitespace-nowrap transition-all duration-300", collapsed ? "max-w-0 opacity-0" : "max-w-[200px] opacity-100")}>
+            <div key={group.label} className="mb-3">
+              <div className="relative mb-1 mt-3 px-2">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80 overflow-hidden whitespace-nowrap transition-all duration-300 max-w-[200px] opacity-100 [.sidebar-collapsed_&]:max-w-0 [.sidebar-collapsed_&]:opacity-0">
                   {group.label}
                 </div>
-                {collapsed && <div className="absolute left-1/2 top-1/2 w-6 -translate-x-1/2 -translate-y-1/2 border-t border-sidebar-border" />}
+                <div className="absolute left-5 top-1/2 w-6 -translate-x-1/2 -translate-y-1/2 border-t border-sidebar-border opacity-0 transition-opacity duration-300 [.sidebar-collapsed_&]:opacity-100 pointer-events-none" />
               </div>
               <ul className="space-y-1">
                 {group.items.map((item) => {
@@ -101,14 +98,17 @@ export function AppSidebar({ open, onClose, collapsed, onToggleCollapse }: { ope
                         to={item.to}
                         onClick={onClose}
                         className={cn(
-                          "group flex items-center rounded-lg px-3.5 py-2 text-sm font-medium transition-colors relative",
+                          "group flex items-center rounded-lg h-10 text-sm font-medium relative overflow-hidden transition-all duration-300",
+                          "w-full [.sidebar-collapsed_&]:w-10",
                           active
                             ? "bg-sidebar-accent text-sidebar-accent-foreground"
                             : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                         )}
                       >
-                        <Icon className={cn("h-5 w-5 shrink-0", active && "text-primary")} />
-                        <div className={cn("flex flex-1 items-center overflow-hidden transition-all duration-300", collapsed ? "w-0 opacity-0 ml-0" : "w-auto opacity-100 ml-3")}>
+                        <div className="flex w-10 shrink-0 items-center justify-center">
+                          <Icon className={cn("h-5 w-5", active && "text-primary")} />
+                        </div>
+                        <div className="flex items-center overflow-hidden transition-all duration-300 flex-1 opacity-100 pr-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0">
                           <span className="flex-1 truncate">{item.label}</span>
                           {"badge" in item && item.badge && (
                             <span className={cn(
@@ -134,7 +134,8 @@ export function AppSidebar({ open, onClose, collapsed, onToggleCollapse }: { ope
             className="absolute -right-3.5 top-1/2 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-sidebar-border bg-background text-foreground shadow-sm transition-transform duration-300 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring lg:flex z-50"
             aria-label="Toggle sidebar"
           >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            <ChevronLeft className="h-4 w-4 block [.sidebar-collapsed_&]:hidden" />
+            <ChevronRight className="h-4 w-4 hidden [.sidebar-collapsed_&]:block" />
           </button>
         )}
       </aside>
