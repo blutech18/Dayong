@@ -1,13 +1,35 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  CommandDialog, CommandEmpty, CommandGroup, CommandInput,
-  CommandItem, CommandList, CommandSeparator, CommandShortcut,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
 } from "@/components/ui/command";
 import {
-  LayoutDashboard, Users, Wallet, CalendarDays, HeartHandshake,
-  Landmark, FileText, Megaphone, BarChart3, Bell, ShieldCheck,
-  Settings, UserCircle, Sun, Moon, LogOut, Plus, Printer, Keyboard,
+  LayoutDashboard,
+  Users,
+  Wallet,
+  CalendarDays,
+  HeartHandshake,
+  Landmark,
+  FileText,
+  Megaphone,
+  BarChart3,
+  Bell,
+  ShieldCheck,
+  Settings,
+  UserCircle,
+  Sun,
+  Moon,
+  LogOut,
+  Plus,
+  Printer,
+  Keyboard,
 } from "lucide-react";
 import { getTheme, setTheme } from "@/lib/theme";
 
@@ -20,12 +42,48 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard, shortcut: "G D", keywords: "home overview" },
-  { label: "Members", to: "/members", icon: Users, shortcut: "G M", keywords: "residents directory" },
-  { label: "Contributions", to: "/contributions", icon: Wallet, shortcut: "G C", keywords: "payments dues" },
-  { label: "Collection Events", to: "/collection-events", icon: CalendarDays, shortcut: "G E", keywords: "collectors" },
-  { label: "Assistance Requests", to: "/assistance", icon: HeartHandshake, shortcut: "G A", keywords: "aid help" },
-  { label: "Financials", to: "/financials", icon: Landmark, shortcut: "G F", keywords: "cash treasury" },
+  {
+    label: "Dashboard",
+    to: "/dashboard",
+    icon: LayoutDashboard,
+    shortcut: "G D",
+    keywords: "home overview",
+  },
+  {
+    label: "Members",
+    to: "/members",
+    icon: Users,
+    shortcut: "G M",
+    keywords: "residents directory",
+  },
+  {
+    label: "Contributions",
+    to: "/contributions",
+    icon: Wallet,
+    shortcut: "G C",
+    keywords: "payments dues",
+  },
+  {
+    label: "Collection Events",
+    to: "/collection-events",
+    icon: CalendarDays,
+    shortcut: "G E",
+    keywords: "collectors",
+  },
+  {
+    label: "Assistance Requests",
+    to: "/assistance",
+    icon: HeartHandshake,
+    shortcut: "G A",
+    keywords: "aid help",
+  },
+  {
+    label: "Financials",
+    to: "/financials",
+    icon: Landmark,
+    shortcut: "G F",
+    keywords: "cash treasury",
+  },
   { label: "Documents", to: "/documents", icon: FileText, keywords: "files uploads" },
   { label: "Announcements", to: "/announcements", icon: Megaphone, keywords: "posts news" },
   { label: "Reports", to: "/reports", icon: BarChart3, shortcut: "G R", keywords: "print export" },
@@ -45,7 +103,7 @@ const REPORTS: NavItem[] = [
 ];
 
 const CREATE: NavItem[] = [
-  { label: "New Member", to: "/members/new", icon: Plus, keywords: "add register" },
+  { label: "New Member", to: "/members", icon: Plus, keywords: "add register" },
   { label: "New Collection Event", to: "/collection-events", icon: Plus },
   { label: "New Announcement", to: "/announcements", icon: Plus },
 ];
@@ -61,10 +119,7 @@ export function CommandPalette({ onOpenShortcuts }: { onOpenShortcuts?: () => vo
     const isTyping = (el: EventTarget | null) => {
       if (!(el instanceof HTMLElement)) return false;
       const tag = el.tagName;
-      return (
-        tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||
-        el.isContentEditable
-      );
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el.isContentEditable;
     };
 
     const onKey = (e: KeyboardEvent) => {
@@ -91,9 +146,16 @@ export function CommandPalette({ onOpenShortcuts }: { onOpenShortcuts?: () => vo
       }
       if (gPressed) {
         const map: Record<string, string> = {
-          d: "/dashboard", m: "/members", c: "/contributions",
-          e: "/collection-events", a: "/assistance", f: "/financials",
-          r: "/reports", n: "/notifications", s: "/settings", p: "/profile",
+          d: "/dashboard",
+          m: "/members",
+          c: "/contributions",
+          e: "/collection-events",
+          a: "/assistance",
+          f: "/financials",
+          r: "/reports",
+          n: "/notifications",
+          s: "/settings",
+          p: "/profile",
         };
         const dest = map[e.key.toLowerCase()];
         if (dest) {

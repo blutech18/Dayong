@@ -1,4 +1,10 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const groups: { title: string; items: { keys: string[]; label: string }[] }[] = [
   {
@@ -28,16 +34,18 @@ const groups: { title: string; items: { keys: string[]; label: string }[] }[] = 
 ];
 
 export function ShortcutsDialog({
-  open, onOpenChange,
-}: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>
-            Move around DAYONG without leaving the keyboard.
-          </DialogDescription>
+          <DialogDescription>Move around DAYONG without leaving the keyboard.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-5 sm:grid-cols-2">
           {groups.map((g) => (

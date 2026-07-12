@@ -4,10 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/forbidden")({
   head: () => ({
-    meta: [
-      { title: "Access denied — DAYONG" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Access denied — DAYONG" }, { name: "robots", content: "noindex" }],
   }),
   component: ForbiddenPage,
 });
@@ -24,8 +21,8 @@ function ForbiddenPage() {
           You don't have access to this page
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your role doesn't include permission for this resource. If you believe
-          this is a mistake, contact your administrator.
+          Your role doesn't include permission for this resource. If you believe this is a mistake,
+          contact your administrator.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button asChild>

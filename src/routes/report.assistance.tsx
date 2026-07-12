@@ -1,17 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ReportShell, ReportTile } from "@/components/report-shell";
-import { assistanceRequests, formatDate, formatPHP } from "@/lib/mock-data";
+import { formatDate, formatPHP } from "@/lib/format";
+import { requireAuth } from "@/lib/auth-guard";
+import { getAssistanceReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/assistance")({
-  head: () => ({ meta: [{ title: "Assistance Report — DAYONG" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Assistance Report — DAYONG" }, { name: "robots", content: "noindex" }],
+  }),
+  beforeLoad: () => requireAuth(),
+  loader: () => getAssistanceReport(),
   component: AssistanceReportPage,
 });
 
 function AssistanceReportPage() {
+  const assistanceRequests = Route.useLoaderData();
   const rows = [...assistanceRequests].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
   const released = assistanceRequests.filter((r) => r.status === "released");
   const totalReleased = released.reduce((s, r) => s + r.amount, 0);
-  const pending = assistanceRequests.filter((r) => r.status === "pending" || r.status === "under_review").length;
+  const pending = assistanceRequests.filter(
+    (r) => r.status === "pending" || r.status === "under_review",
+  ).length;
   const approved = assistanceRequests.filter((r) => r.status === "approved").length;
 
   const byCategory = ["medical", "burial", "calamity", "educational", "other"].map((cat) => ({
@@ -33,7 +42,11 @@ function AssistanceReportPage() {
       <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500">
-            <tr><th className="px-3 py-2">Category</th><th className="px-3 py-2 text-right">Requests</th><th className="px-3 py-2 text-right">Total requested</th></tr>
+            <tr>
+              <th className="px-3 py-2">Category</th>
+              <th className="px-3 py-2 text-right">Requests</th>
+              <th className="px-3 py-2 text-right">Total requested</th>
+            </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
             {byCategory.map((c) => (

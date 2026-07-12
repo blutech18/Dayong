@@ -17,19 +17,15 @@ const map: Record<string, string> = {
   completed: "bg-success/15 text-success ring-success/20",
 };
 
-export function StatusBadge({
-  status,
-  className,
-}: {
-  status: string;
-  className?: string;
-}) {
+export function StatusBadge({ status, className }: { status: string; className?: string }) {
   return (
-    <span className={cn(
-      "inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold capitalize ring-1 ring-inset",
-      map[status] ?? "bg-muted text-muted-foreground ring-border",
-      className,
-    )}>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold capitalize ring-1 ring-inset",
+        map[status] ?? "bg-muted text-muted-foreground ring-border",
+        className,
+      )}
+    >
       {status.replace(/_/g, " ")}
     </span>
   );

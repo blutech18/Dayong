@@ -26,9 +26,7 @@ function NotFoundComponent() {
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 text-primary">
           <span className="font-display text-lg font-bold">404</span>
         </div>
-        <h1 className="mt-6 font-display text-2xl font-semibold tracking-tight">
-          Page not found
-        </h1>
+        <h1 className="mt-6 font-display text-2xl font-semibold tracking-tight">Page not found</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
         </p>
@@ -69,7 +67,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
             Try again
@@ -99,14 +100,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "DAYONG" },
       { property: "og:title", content: "DAYONG — Member Assistance & Collection Management" },
-      { property: "og:description", content: "Members, contributions, collections and assistance — one modern system." },
+      {
+        property: "og:description",
+        content: "Members, contributions, collections and assistance — one modern system.",
+      },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "/dayong.png" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "/dayong.png" },
       { name: "theme-color", content: "#0f172a" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/dayong.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/dayong.png" },
     ],
     scripts: [{ children: themeInitScript }],
   }),

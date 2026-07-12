@@ -1,39 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Printer, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  monthlyExpenses,
-  dashboardStats,
-  formatPHP,
-  formatDate,
-} from "@/lib/mock-data";
+import { formatPHP, formatDate } from "@/lib/format";
+import { requireAuth } from "@/lib/auth-guard";
+import { getFinancialReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/financial")({
   head: () => ({
-    meta: [
-      { title: "Financial Report — DAYONG" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Financial Report — DAYONG" }, { name: "robots", content: "noindex" }],
   }),
+  beforeLoad: () => requireAuth(),
+  loader: () => getFinancialReport(),
   component: FinancialReportPage,
 });
 
-// Mock: derive income from targetable events for demo purposes
-const monthlyIncome = [
-  { month: "Oct", income: 21500 },
-  { month: "Nov", income: 19800 },
-  { month: "Dec", income: 28400 },
-  { month: "Jan", income: 22200 },
-  { month: "Feb", income: 22750 },
-  { month: "Mar", income: 18500 },
-];
-
 function FinancialReportPage() {
-  const rows = monthlyExpenses.map((e, i) => {
-    const income = monthlyIncome[i]?.income ?? 0;
-    const expense = e.assistance + e.operations;
-    return { month: e.month, income, assistance: e.assistance, operations: e.operations, expense, net: income - expense };
-  });
+  const { monthly: rows, fund } = Route.useLoaderData();
   const totals = rows.reduce(
     (acc, r) => ({
       income: acc.income + r.income,
@@ -49,7 +31,10 @@ function FinancialReportPage() {
     <div className="min-h-screen bg-muted/30 py-8 print:bg-white print:py-0">
       <div className="mx-auto mb-4 flex max-w-4xl items-center justify-between px-4 print:hidden">
         <Button variant="ghost" size="sm" asChild className="gap-1.5">
-          <Link to="/reports"><ArrowLeft className="h-4 w-4" />Back to Reports</Link>
+          <Link to="/reports">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Reports
+          </Link>
         </Button>
         <Button size="sm" className="gap-1.5" onClick={() => window.print()}>
           <Printer className="h-4 w-4" /> Print report
@@ -65,13 +50,19 @@ function FinancialReportPage() {
               </div>
               <div>
                 <div className="font-display text-xl font-bold tracking-tight">DAYONG</div>
-                <div className="text-xs text-slate-600">Member Assistance & Collection Management</div>
+                <div className="text-xs text-slate-600">
+                  Member Assistance & Collection Management
+                </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-xs uppercase tracking-widest text-slate-500">Financial Report</div>
+              <div className="text-xs uppercase tracking-widest text-slate-500">
+                Financial Report
+              </div>
               <div className="font-display text-lg font-semibold">6-Month Summary</div>
-              <div className="mt-1 text-xs text-slate-600">Generated {formatDate(new Date().toISOString())}</div>
+              <div className="mt-1 text-xs text-slate-600">
+                Generated {formatDate(new Date().toISOString())}
+              </div>
             </div>
           </div>
         </div>
@@ -104,7 +95,12 @@ function FinancialReportPage() {
                     <td className="px-3 py-2 text-right tabular-nums">{formatPHP(r.assistance)}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{formatPHP(r.operations)}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{formatPHP(r.expense)}</td>
-                    <td className={"px-3 py-2 text-right tabular-nums font-semibold " + (r.net >= 0 ? "text-emerald-700" : "text-rose-700")}>
+                    <td
+                      className={
+                        "px-3 py-2 text-right tabular-nums font-semibold " +
+                        (r.net >= 0 ? "text-emerald-700" : "text-rose-700")
+                      }
+                    >
                       {formatPHP(r.net)}
                     </td>
                   </tr>
@@ -114,10 +110,19 @@ function FinancialReportPage() {
                 <tr>
                   <td className="px-3 py-2">Total</td>
                   <td className="px-3 py-2 text-right tabular-nums">{formatPHP(totals.income)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatPHP(totals.assistance)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatPHP(totals.operations)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">
+                    {formatPHP(totals.assistance)}
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums">
+                    {formatPHP(totals.operations)}
+                  </td>
                   <td className="px-3 py-2 text-right tabular-nums">{formatPHP(totals.expense)}</td>
-                  <td className={"px-3 py-2 text-right tabular-nums " + (totals.net >= 0 ? "text-emerald-700" : "text-rose-700")}>
+                  <td
+                    className={
+                      "px-3 py-2 text-right tabular-nums " +
+                      (totals.net >= 0 ? "text-emerald-700" : "text-rose-700")
+                    }
+                  >
                     {formatPHP(totals.net)}
                   </td>
                 </tr>
@@ -127,20 +132,24 @@ function FinancialReportPage() {
 
           <h2 className="mt-8 font-display text-base font-semibold">Fund position</h2>
           <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <FactCell label="Ending balance" value={formatPHP(dashboardStats.balance)} />
-            <FactCell label="Active members" value={String(dashboardStats.activeMembers)} />
-            <FactCell label="Approved claims" value={String(dashboardStats.approvedAssistance)} />
-            <FactCell label="Pending claims" value={String(dashboardStats.pendingAssistance)} />
+            <FactCell label="Ending balance" value={formatPHP(fund.balance)} />
+            <FactCell label="Active members" value={String(fund.activeMembers)} />
+            <FactCell label="Approved claims" value={String(fund.approvedAssistance)} />
+            <FactCell label="Pending claims" value={String(fund.pendingAssistance)} />
           </div>
 
           <div className="mt-10 grid grid-cols-2 gap-8">
             <div>
-              <div className="border-b border-slate-400 pb-1 text-center text-sm font-medium">Admin Santos</div>
+              <div className="border-b border-slate-400 pb-1 text-center text-sm font-medium">
+                Admin Santos
+              </div>
               <div className="mt-1 text-center text-xs text-slate-600">Prepared by · Treasurer</div>
             </div>
             <div>
               <div className="border-b border-slate-400 pb-1">&nbsp;</div>
-              <div className="mt-1 text-center text-xs text-slate-600">Approved by · Board President</div>
+              <div className="mt-1 text-center text-xs text-slate-600">
+                Approved by · Board President
+              </div>
             </div>
           </div>
 
@@ -153,7 +162,15 @@ function FinancialReportPage() {
   );
 }
 
-function SummaryTile({ label, value, tone }: { label: string; value: string; tone: "emerald" | "rose" | "primary" }) {
+function SummaryTile({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "emerald" | "rose" | "primary";
+}) {
   const cls = {
     emerald: "bg-emerald-50 text-emerald-800 ring-emerald-200",
     rose: "bg-rose-50 text-rose-800 ring-rose-200",

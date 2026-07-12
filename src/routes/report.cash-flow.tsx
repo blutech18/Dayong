@@ -1,20 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ReportShell, ReportTile } from "@/components/report-shell";
-import { monthlyCollections, monthlyExpenses, dashboardStats, formatPHP } from "@/lib/mock-data";
+import { formatPHP } from "@/lib/format";
+import { requireAuth } from "@/lib/auth-guard";
+import { getFinancialReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/cash-flow")({
-  head: () => ({ meta: [{ title: "Cash Flow Report — DAYONG" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Cash Flow Report — DAYONG" }, { name: "robots", content: "noindex" }],
+  }),
+  beforeLoad: () => requireAuth(),
+  loader: () => getFinancialReport(),
   component: CashFlowReportPage,
 });
 
 function CashFlowReportPage() {
-  const openingBalance = dashboardStats.balance - monthlyCollections.reduce((s, m, i) => s + m.collected - (monthlyExpenses[i].assistance + monthlyExpenses[i].operations), 0);
+  const { monthly, fund } = Route.useLoaderData();
+  const totalNet = monthly.reduce((s, m) => s + m.net, 0);
+  const openingBalance = fund.balance - totalNet;
   let running = openingBalance;
-  const rows = monthlyCollections.map((c, i) => {
-    const out = monthlyExpenses[i].assistance + monthlyExpenses[i].operations;
-    const net = c.collected - out;
-    running += net;
-    return { month: c.month, inflow: c.collected, outflow: out, net, running };
+  const rows = monthly.map((m) => {
+    running += m.net;
+    return { month: m.month, inflow: m.income, outflow: m.expense, net: m.net, running };
   });
   const totalIn = rows.reduce((s, r) => s + r.inflow, 0);
   const totalOut = rows.reduce((s, r) => s + r.outflow, 0);
@@ -25,7 +31,7 @@ function CashFlowReportPage() {
         <ReportTile label="Opening balance" value={formatPHP(openingBalance)} tone="sky" />
         <ReportTile label="Cash in" value={formatPHP(totalIn)} tone="emerald" />
         <ReportTile label="Cash out" value={formatPHP(totalOut)} tone="rose" />
-        <ReportTile label="Ending balance" value={formatPHP(dashboardStats.balance)} />
+        <ReportTile label="Ending balance" value={formatPHP(fund.balance)} />
       </div>
 
       <h2 className="mt-8 font-display text-base font-semibold">Monthly cash flow</h2>
@@ -46,7 +52,14 @@ function CashFlowReportPage() {
                 <td className="px-3 py-2 font-medium">{r.month}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{formatPHP(r.inflow)}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{formatPHP(r.outflow)}</td>
-                <td className={"px-3 py-2 text-right tabular-nums font-semibold " + (r.net >= 0 ? "text-emerald-700" : "text-rose-700")}>{formatPHP(r.net)}</td>
+                <td
+                  className={
+                    "px-3 py-2 text-right tabular-nums font-semibold " +
+                    (r.net >= 0 ? "text-emerald-700" : "text-rose-700")
+                  }
+                >
+                  {formatPHP(r.net)}
+                </td>
                 <td className="px-3 py-2 text-right tabular-nums">{formatPHP(r.running)}</td>
               </tr>
             ))}

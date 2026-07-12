@@ -1,13 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ReportShell, ReportTile } from "@/components/report-shell";
-import { collectionEvents, formatDate, formatPHP } from "@/lib/mock-data";
+import { formatDate, formatPHP } from "@/lib/format";
+import { requireAuth } from "@/lib/auth-guard";
+import { getEventsReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/events")({
-  head: () => ({ meta: [{ title: "Collection Events Report — DAYONG" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Collection Events Report — DAYONG" }, { name: "robots", content: "noindex" }],
+  }),
+  beforeLoad: () => requireAuth(),
+  loader: () => getEventsReport(),
   component: EventsReportPage,
 });
 
 function EventsReportPage() {
+  const collectionEvents = Route.useLoaderData();
   const totalCollected = collectionEvents.reduce((s, e) => s + e.collectedAmount, 0);
   const totalTarget = collectionEvents.reduce((s, e) => s + e.targetAmount, 0);
   const completed = collectionEvents.filter((e) => e.status === "completed").length;
@@ -37,15 +44,21 @@ function EventsReportPage() {
           </thead>
           <tbody className="divide-y divide-slate-200">
             {collectionEvents.map((e) => {
-              const pct = e.targetAmount ? Math.round((e.collectedAmount / e.targetAmount) * 100) : 0;
+              const pct = e.targetAmount
+                ? Math.round((e.collectedAmount / e.targetAmount) * 100)
+                : 0;
               return (
                 <tr key={e.id}>
                   <td className="px-3 py-1.5">{e.name}</td>
                   <td className="px-3 py-1.5">{formatDate(e.scheduledAt)}</td>
                   <td className="px-3 py-1.5">{e.collector}</td>
                   <td className="px-3 py-1.5 capitalize">{e.status.replace("_", " ")}</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{formatPHP(e.collectedAmount)}</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{formatPHP(e.targetAmount)}</td>
+                  <td className="px-3 py-1.5 text-right tabular-nums">
+                    {formatPHP(e.collectedAmount)}
+                  </td>
+                  <td className="px-3 py-1.5 text-right tabular-nums">
+                    {formatPHP(e.targetAmount)}
+                  </td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{pct}%</td>
                 </tr>
               );

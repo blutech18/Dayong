@@ -1,12 +1,7 @@
 // Realistic mock data for DAYONG prototype.
 
 export type MemberStatus = "active" | "inactive" | "pending" | "archived";
-export type AssistanceStatus =
-  | "pending"
-  | "under_review"
-  | "approved"
-  | "released"
-  | "rejected";
+export type AssistanceStatus = "pending" | "under_review" | "approved" | "released" | "rejected";
 export type PaymentStatus = "paid" | "partial" | "unpaid";
 
 export interface Member {
@@ -97,16 +92,63 @@ export interface Notification {
 }
 
 const firstNames = [
-  "Maria", "Juan", "Ana", "Jose", "Rosa", "Pedro", "Luz", "Ramon", "Elena",
-  "Carlos", "Sofia", "Miguel", "Lorna", "Angelo", "Grace", "Ricardo", "Divina",
-  "Roberto", "Cecilia", "Fernando", "Corazon", "Alberto", "Teresa", "Emilio",
-  "Nenita", "Antonio", "Isabel", "Marcelo", "Cristina", "Reynaldo",
+  "Maria",
+  "Juan",
+  "Ana",
+  "Jose",
+  "Rosa",
+  "Pedro",
+  "Luz",
+  "Ramon",
+  "Elena",
+  "Carlos",
+  "Sofia",
+  "Miguel",
+  "Lorna",
+  "Angelo",
+  "Grace",
+  "Ricardo",
+  "Divina",
+  "Roberto",
+  "Cecilia",
+  "Fernando",
+  "Corazon",
+  "Alberto",
+  "Teresa",
+  "Emilio",
+  "Nenita",
+  "Antonio",
+  "Isabel",
+  "Marcelo",
+  "Cristina",
+  "Reynaldo",
 ];
 const lastNames = [
-  "Dela Cruz", "Reyes", "Santos", "Ramos", "Mendoza", "Torres", "Aquino",
-  "Villanueva", "Bautista", "Domingo", "Padilla", "Alvarez", "Navarro",
-  "Salazar", "Castillo", "Fernandez", "Gutierrez", "Ocampo", "Marquez",
-  "Villareal", "Guzman", "Pascual", "Ilagan", "Sarmiento", "Bernardo",
+  "Dela Cruz",
+  "Reyes",
+  "Santos",
+  "Ramos",
+  "Mendoza",
+  "Torres",
+  "Aquino",
+  "Villanueva",
+  "Bautista",
+  "Domingo",
+  "Padilla",
+  "Alvarez",
+  "Navarro",
+  "Salazar",
+  "Castillo",
+  "Fernandez",
+  "Gutierrez",
+  "Ocampo",
+  "Marquez",
+  "Villareal",
+  "Guzman",
+  "Pascual",
+  "Ilagan",
+  "Sarmiento",
+  "Bernardo",
 ];
 
 function pick<T>(arr: T[], i: number) {
@@ -127,8 +169,14 @@ export const members: Member[] = Array.from({ length: 48 }, (_, i) => {
   const first = pick(firstNames, i * 3 + 1);
   const last = pick(lastNames, i * 7 + 2);
   const statuses: MemberStatus[] = [
-    "active", "active", "active", "active", "active",
-    "inactive", "pending", "archived",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "inactive",
+    "pending",
+    "archived",
   ];
   return {
     id: `mbr_${pad(i + 1)}`,
@@ -152,7 +200,14 @@ export const contributions: Contribution[] = Array.from({ length: 60 }, (_, i) =
   const amounts = [500, 500, 500, 1000, 250, 500, 750, 500];
   const methods = ["cash", "gcash", "bank", "cash", "cash", "check"] as const;
   const statuses: PaymentStatus[] = [
-    "paid", "paid", "paid", "paid", "paid", "partial", "paid", "unpaid",
+    "paid",
+    "paid",
+    "paid",
+    "paid",
+    "paid",
+    "partial",
+    "paid",
+    "unpaid",
   ];
   return {
     id: `con_${pad(i + 1)}`,
@@ -165,7 +220,8 @@ export const contributions: Contribution[] = Array.from({ length: 60 }, (_, i) =
     receiptNo: `OR-${pad(50000 + i, 6)}`,
     paidAt: daysAgo(i * 2),
     recordedBy: pick(["Admin Santos", "Staff Reyes", "Staff Cruz"], i),
-    eventName: i % 3 === 0 ? "Monthly Collection — " + pick(["January", "February", "March"], i) : undefined,
+    eventName:
+      i % 3 === 0 ? "Monthly Collection — " + pick(["January", "February", "March"], i) : undefined,
   };
 });
 
@@ -216,39 +272,42 @@ export const collectionEvents: CollectionEvent[] = [
   },
 ];
 
-export const assistanceRequests: AssistanceRequest[] = Array.from(
-  { length: 24 },
-  (_, i) => {
-    const m = members[(i * 3) % members.length];
-    const cats = ["medical", "burial", "calamity", "educational", "medical", "other"] as const;
-    const statuses: AssistanceStatus[] = [
-      "pending", "under_review", "approved", "released", "rejected",
-      "pending", "released", "approved",
-    ];
-    const reasons: Record<string, string> = {
-      medical: "Hospitalization support for family member",
-      burial: "Burial assistance for deceased spouse",
-      calamity: "Typhoon damage — home repairs",
-      educational: "Tuition assistance for scholar",
-      other: "Financial hardship — livelihood support",
-    };
-    const cat = pick([...cats], i);
-    return {
-      id: `req_${pad(i + 1)}`,
-      requestNo: `AR-2026-${pad(i + 1)}`,
-      memberId: m.id,
-      memberName: `${m.firstName} ${m.lastName}`,
-      memberNo: m.memberNo,
-      category: cat,
-      amount: 2000 + (i % 6) * 1500,
-      reason: reasons[cat],
-      status: pick(statuses, i),
-      submittedAt: daysAgo(i * 3),
-      reviewedBy: i % 2 === 0 ? "Admin Santos" : undefined,
-      documentsCount: 2 + (i % 4),
-    };
-  },
-);
+export const assistanceRequests: AssistanceRequest[] = Array.from({ length: 24 }, (_, i) => {
+  const m = members[(i * 3) % members.length];
+  const cats = ["medical", "burial", "calamity", "educational", "medical", "other"] as const;
+  const statuses: AssistanceStatus[] = [
+    "pending",
+    "under_review",
+    "approved",
+    "released",
+    "rejected",
+    "pending",
+    "released",
+    "approved",
+  ];
+  const reasons: Record<string, string> = {
+    medical: "Hospitalization support for family member",
+    burial: "Burial assistance for deceased spouse",
+    calamity: "Typhoon damage — home repairs",
+    educational: "Tuition assistance for scholar",
+    other: "Financial hardship — livelihood support",
+  };
+  const cat = pick([...cats], i);
+  return {
+    id: `req_${pad(i + 1)}`,
+    requestNo: `AR-2026-${pad(i + 1)}`,
+    memberId: m.id,
+    memberName: `${m.firstName} ${m.lastName}`,
+    memberNo: m.memberNo,
+    category: cat,
+    amount: 2000 + (i % 6) * 1500,
+    reason: reasons[cat],
+    status: pick(statuses, i),
+    submittedAt: daysAgo(i * 3),
+    reviewedBy: i % 2 === 0 ? "Admin Santos" : undefined,
+    documentsCount: 2 + (i % 4),
+  };
+});
 
 export const announcements: Announcement[] = [
   {
@@ -313,11 +372,46 @@ export const auditLogs: AuditLog[] = Array.from({ length: 40 }, (_, i) => {
 });
 
 export const notifications: Notification[] = [
-  { id: "n1", title: "New assistance request", body: "Maria Dela Cruz submitted AR-2026-0024 for medical assistance.", type: "info", read: false, createdAt: daysAgo(0) },
-  { id: "n2", title: "Contribution recorded", body: "OR-050231 recorded for Juan Santos — ₱500.00", type: "success", read: false, createdAt: daysAgo(0) },
-  { id: "n3", title: "Approval pending review", body: "AR-2026-0018 has been waiting 3 days for your review.", type: "warning", read: false, createdAt: daysAgo(1) },
-  { id: "n4", title: "Backup completed", body: "Nightly database backup finished successfully.", type: "success", read: true, createdAt: daysAgo(1) },
-  { id: "n5", title: "Failed sign-in attempt", body: "3 failed sign-in attempts for staff@dayong.org from 192.168.1.42.", type: "danger", read: true, createdAt: daysAgo(2) },
+  {
+    id: "n1",
+    title: "New assistance request",
+    body: "Maria Dela Cruz submitted AR-2026-0024 for medical assistance.",
+    type: "info",
+    read: false,
+    createdAt: daysAgo(0),
+  },
+  {
+    id: "n2",
+    title: "Contribution recorded",
+    body: "OR-050231 recorded for Juan Santos — ₱500.00",
+    type: "success",
+    read: false,
+    createdAt: daysAgo(0),
+  },
+  {
+    id: "n3",
+    title: "Approval pending review",
+    body: "AR-2026-0018 has been waiting 3 days for your review.",
+    type: "warning",
+    read: false,
+    createdAt: daysAgo(1),
+  },
+  {
+    id: "n4",
+    title: "Backup completed",
+    body: "Nightly database backup finished successfully.",
+    type: "success",
+    read: true,
+    createdAt: daysAgo(1),
+  },
+  {
+    id: "n5",
+    title: "Failed sign-in attempt",
+    body: "3 failed sign-in attempts for staff@dayong.org from 192.168.1.42.",
+    type: "danger",
+    read: true,
+    createdAt: daysAgo(2),
+  },
 ];
 
 export interface StaffMember {
@@ -331,17 +425,80 @@ export interface StaffMember {
 }
 
 export const staffMembers: StaffMember[] = [
-  { id: "stf_01", name: "Admin Santos", email: "admin@dayong.org", role: "admin", status: "active", lastActive: daysAgo(0), phone: "+63 917 555 0101" },
-  { id: "stf_02", name: "Corazon Reyes", email: "treasurer@dayong.org", role: "treasurer", status: "active", lastActive: daysAgo(0), phone: "+63 917 555 0102" },
-  { id: "stf_03", name: "Miguel Cruz", email: "collector1@dayong.org", role: "collector", status: "active", lastActive: daysAgo(1), phone: "+63 917 555 0103" },
-  { id: "stf_04", name: "Grace Domingo", email: "collector2@dayong.org", role: "collector", status: "active", lastActive: daysAgo(2), phone: "+63 917 555 0104" },
-  { id: "stf_05", name: "Roberto Villanueva", email: "secretary@dayong.org", role: "secretary", status: "active", lastActive: daysAgo(1), phone: "+63 917 555 0105" },
-  { id: "stf_06", name: "Elena Bautista", email: "auditor@dayong.org", role: "viewer", status: "invited", lastActive: daysAgo(5), phone: "+63 917 555 0106" },
-  { id: "stf_07", name: "Fernando Torres", email: "former@dayong.org", role: "collector", status: "disabled", lastActive: daysAgo(45), phone: "+63 917 555 0107" },
+  {
+    id: "stf_01",
+    name: "Admin Santos",
+    email: "admin@dayong.org",
+    role: "admin",
+    status: "active",
+    lastActive: daysAgo(0),
+    phone: "+63 917 555 0101",
+  },
+  {
+    id: "stf_02",
+    name: "Corazon Reyes",
+    email: "treasurer@dayong.org",
+    role: "treasurer",
+    status: "active",
+    lastActive: daysAgo(0),
+    phone: "+63 917 555 0102",
+  },
+  {
+    id: "stf_03",
+    name: "Miguel Cruz",
+    email: "collector1@dayong.org",
+    role: "collector",
+    status: "active",
+    lastActive: daysAgo(1),
+    phone: "+63 917 555 0103",
+  },
+  {
+    id: "stf_04",
+    name: "Grace Domingo",
+    email: "collector2@dayong.org",
+    role: "collector",
+    status: "active",
+    lastActive: daysAgo(2),
+    phone: "+63 917 555 0104",
+  },
+  {
+    id: "stf_05",
+    name: "Roberto Villanueva",
+    email: "secretary@dayong.org",
+    role: "secretary",
+    status: "active",
+    lastActive: daysAgo(1),
+    phone: "+63 917 555 0105",
+  },
+  {
+    id: "stf_06",
+    name: "Elena Bautista",
+    email: "auditor@dayong.org",
+    role: "viewer",
+    status: "invited",
+    lastActive: daysAgo(5),
+    phone: "+63 917 555 0106",
+  },
+  {
+    id: "stf_07",
+    name: "Fernando Torres",
+    email: "former@dayong.org",
+    role: "collector",
+    status: "disabled",
+    lastActive: daysAgo(45),
+    phone: "+63 917 555 0107",
+  },
 ];
 
 export const rolePermissions: Record<StaffMember["role"], string[]> = {
-  admin: ["Manage members", "Approve assistance", "Manage staff", "Edit settings", "View audit logs", "Manage finances"],
+  admin: [
+    "Manage members",
+    "Approve assistance",
+    "Manage staff",
+    "Edit settings",
+    "View audit logs",
+    "Manage finances",
+  ],
   treasurer: ["Record contributions", "Manage finances", "Generate reports", "View members"],
   collector: ["Record contributions", "View assigned members", "Manage own events"],
   secretary: ["Manage announcements", "Manage documents", "View members"],
@@ -380,8 +537,12 @@ export const dashboardStats = {
   totalMembers: members.length,
   activeMembers: members.filter((m) => m.status === "active").length,
   inactiveMembers: members.filter((m) => m.status === "inactive").length,
-  pendingAssistance: assistanceRequests.filter((a) => a.status === "pending" || a.status === "under_review").length,
-  approvedAssistance: assistanceRequests.filter((a) => a.status === "approved" || a.status === "released").length,
+  pendingAssistance: assistanceRequests.filter(
+    (a) => a.status === "pending" || a.status === "under_review",
+  ).length,
+  approvedAssistance: assistanceRequests.filter(
+    (a) => a.status === "approved" || a.status === "released",
+  ).length,
   rejectedAssistance: assistanceRequests.filter((a) => a.status === "rejected").length,
   monthlyCollections: 18500,
   monthlyExpenses: 12700,

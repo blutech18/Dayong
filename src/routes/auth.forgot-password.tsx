@@ -24,10 +24,16 @@ function ForgotPage() {
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" placeholder="you@dayong.org" />
         </div>
-        <Button className="w-full gap-2"><Mail className="h-4 w-4" />Send reset link</Button>
+        <Button className="w-full gap-2">
+          <Mail className="h-4 w-4" />
+          Send reset link
+        </Button>
       </form>
 
-      <Link to="/auth/login" className="mt-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <Link
+        to="/auth/login"
+        className="mt-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to sign in
       </Link>
     </div>

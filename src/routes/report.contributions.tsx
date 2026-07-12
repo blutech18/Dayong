@@ -1,13 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ReportShell, ReportTile } from "@/components/report-shell";
-import { contributions, formatDate, formatPHP } from "@/lib/mock-data";
+import { formatDate, formatPHP } from "@/lib/format";
+import { requireAuth } from "@/lib/auth-guard";
+import { getContributionsReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/contributions")({
-  head: () => ({ meta: [{ title: "Contribution Report — DAYONG" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Contribution Report — DAYONG" }, { name: "robots", content: "noindex" }],
+  }),
+  beforeLoad: () => requireAuth(),
+  loader: () => getContributionsReport(),
   component: ContributionReportPage,
 });
 
 function ContributionReportPage() {
+  const contributions = Route.useLoaderData();
   const rows = [...contributions].sort((a, b) => b.paidAt.localeCompare(a.paidAt));
   const paid = contributions.filter((c) => c.status === "paid");
   const totalPaid = paid.reduce((s, c) => s + c.amount, 0);

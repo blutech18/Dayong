@@ -1,18 +1,23 @@
-import { createFileRoute, Outlet, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, LayoutDashboard, CreditCard, HeartPulse, User } from "lucide-react";
-
-const isAuthenticated = () => true; 
+import { redirect } from "@tanstack/react-router";
+import { requireAuth } from "@/lib/auth-guard";
+import { logout } from "@/server/auth";
 
 export const Route = createFileRoute("/member")({
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw redirect({ to: "/auth/login" });
+  beforeLoad: async () => {
+    const user = await requireAuth();
+    // Staff/admin accounts belong in the back-office, not the member portal.
+    if (user.role !== "member") {
+      throw redirect({ to: "/dashboard" });
     }
+    return { user };
   },
   component: MemberShell,
 });
 
 function MemberShell() {
+  const navigate = useNavigate();
   const navItems = [
     { name: "Dashboard", href: "/member/dashboard", icon: LayoutDashboard },
     { name: "My Contributions", href: "/member/contributions", icon: CreditCard },
@@ -31,10 +36,17 @@ function MemberShell() {
             </div>
             <span className="font-display font-semibold tracking-tight">DAYONG Member Portal</span>
           </div>
-          <Link to="/auth/login" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <button
+            type="button"
+            onClick={async () => {
+              await logout();
+              await navigate({ to: "/auth/login" });
+            }}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
             <LogOut className="h-4 w-4" />
             Sign Out
-          </Link>
+          </button>
         </div>
       </header>
 

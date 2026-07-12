@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MemberRouteImport } from './routes/member'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
@@ -47,13 +49,19 @@ import { Route as ShellAuditRouteImport } from './routes/_shell.audit'
 import { Route as ShellAssistanceRouteImport } from './routes/_shell.assistance'
 import { Route as ShellAnnouncementsRouteImport } from './routes/_shell.announcements'
 import { Route as ShellStaffIdRouteImport } from './routes/_shell.staff.$id'
-import { Route as ShellMembersNewRouteImport } from './routes/_shell.members.new'
 import { Route as ShellMembersIdRouteImport } from './routes/_shell.members.$id'
-import { Route as ShellContributionsNewRouteImport } from './routes/_shell.contributions.new'
 import { Route as ShellCollectionEventsIdRouteImport } from './routes/_shell.collection-events.$id'
-import { Route as ShellAssistanceNewRouteImport } from './routes/_shell.assistance.new'
-import { Route as ShellAnnouncementsNewRouteImport } from './routes/_shell.announcements.new'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MemberRoute = MemberRouteImport.update({
   id: '/member',
   path: '/member',
@@ -243,35 +251,15 @@ const ShellStaffIdRoute = ShellStaffIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ShellStaffRoute,
 } as any)
-const ShellMembersNewRoute = ShellMembersNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ShellMembersRoute,
-} as any)
 const ShellMembersIdRoute = ShellMembersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => ShellMembersRoute,
 } as any)
-const ShellContributionsNewRoute = ShellContributionsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ShellContributionsRoute,
-} as any)
 const ShellCollectionEventsIdRoute = ShellCollectionEventsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => ShellCollectionEventsRoute,
-} as any)
-const ShellAssistanceNewRoute = ShellAssistanceNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ShellAssistanceRoute,
-} as any)
-const ShellAnnouncementsNewRoute = ShellAnnouncementsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ShellAnnouncementsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -281,11 +269,13 @@ export interface FileRoutesByFullPath {
   '/forbidden': typeof ForbiddenRoute
   '/maintenance': typeof MaintenanceRoute
   '/member': typeof MemberRouteWithChildren
-  '/announcements': typeof ShellAnnouncementsRouteWithChildren
-  '/assistance': typeof ShellAssistanceRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/announcements': typeof ShellAnnouncementsRoute
+  '/assistance': typeof ShellAssistanceRoute
   '/audit': typeof ShellAuditRoute
   '/collection-events': typeof ShellCollectionEventsRouteWithChildren
-  '/contributions': typeof ShellContributionsRouteWithChildren
+  '/contributions': typeof ShellContributionsRoute
   '/dashboard': typeof ShellDashboardRoute
   '/documents': typeof ShellDocumentsRoute
   '/financials': typeof ShellFinancialsRoute
@@ -311,12 +301,8 @@ export interface FileRoutesByFullPath {
   '/report/events': typeof ReportEventsRoute
   '/report/financial': typeof ReportFinancialRoute
   '/report/members': typeof ReportMembersRoute
-  '/announcements/new': typeof ShellAnnouncementsNewRoute
-  '/assistance/new': typeof ShellAssistanceNewRoute
   '/collection-events/$id': typeof ShellCollectionEventsIdRoute
-  '/contributions/new': typeof ShellContributionsNewRoute
   '/members/$id': typeof ShellMembersIdRoute
-  '/members/new': typeof ShellMembersNewRoute
   '/staff/$id': typeof ShellStaffIdRoute
 }
 export interface FileRoutesByTo {
@@ -326,11 +312,13 @@ export interface FileRoutesByTo {
   '/forbidden': typeof ForbiddenRoute
   '/maintenance': typeof MaintenanceRoute
   '/member': typeof MemberRouteWithChildren
-  '/announcements': typeof ShellAnnouncementsRouteWithChildren
-  '/assistance': typeof ShellAssistanceRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/announcements': typeof ShellAnnouncementsRoute
+  '/assistance': typeof ShellAssistanceRoute
   '/audit': typeof ShellAuditRoute
   '/collection-events': typeof ShellCollectionEventsRouteWithChildren
-  '/contributions': typeof ShellContributionsRouteWithChildren
+  '/contributions': typeof ShellContributionsRoute
   '/dashboard': typeof ShellDashboardRoute
   '/documents': typeof ShellDocumentsRoute
   '/financials': typeof ShellFinancialsRoute
@@ -356,12 +344,8 @@ export interface FileRoutesByTo {
   '/report/events': typeof ReportEventsRoute
   '/report/financial': typeof ReportFinancialRoute
   '/report/members': typeof ReportMembersRoute
-  '/announcements/new': typeof ShellAnnouncementsNewRoute
-  '/assistance/new': typeof ShellAssistanceNewRoute
   '/collection-events/$id': typeof ShellCollectionEventsIdRoute
-  '/contributions/new': typeof ShellContributionsNewRoute
   '/members/$id': typeof ShellMembersIdRoute
-  '/members/new': typeof ShellMembersNewRoute
   '/staff/$id': typeof ShellStaffIdRoute
 }
 export interface FileRoutesById {
@@ -373,11 +357,13 @@ export interface FileRoutesById {
   '/forbidden': typeof ForbiddenRoute
   '/maintenance': typeof MaintenanceRoute
   '/member': typeof MemberRouteWithChildren
-  '/_shell/announcements': typeof ShellAnnouncementsRouteWithChildren
-  '/_shell/assistance': typeof ShellAssistanceRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/_shell/announcements': typeof ShellAnnouncementsRoute
+  '/_shell/assistance': typeof ShellAssistanceRoute
   '/_shell/audit': typeof ShellAuditRoute
   '/_shell/collection-events': typeof ShellCollectionEventsRouteWithChildren
-  '/_shell/contributions': typeof ShellContributionsRouteWithChildren
+  '/_shell/contributions': typeof ShellContributionsRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
   '/_shell/documents': typeof ShellDocumentsRoute
   '/_shell/financials': typeof ShellFinancialsRoute
@@ -403,12 +389,8 @@ export interface FileRoutesById {
   '/report/events': typeof ReportEventsRoute
   '/report/financial': typeof ReportFinancialRoute
   '/report/members': typeof ReportMembersRoute
-  '/_shell/announcements/new': typeof ShellAnnouncementsNewRoute
-  '/_shell/assistance/new': typeof ShellAssistanceNewRoute
   '/_shell/collection-events/$id': typeof ShellCollectionEventsIdRoute
-  '/_shell/contributions/new': typeof ShellContributionsNewRoute
   '/_shell/members/$id': typeof ShellMembersIdRoute
-  '/_shell/members/new': typeof ShellMembersNewRoute
   '/_shell/staff/$id': typeof ShellStaffIdRoute
 }
 export interface FileRouteTypes {
@@ -420,6 +402,8 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/maintenance'
     | '/member'
+    | '/privacy'
+    | '/terms'
     | '/announcements'
     | '/assistance'
     | '/audit'
@@ -450,12 +434,8 @@ export interface FileRouteTypes {
     | '/report/events'
     | '/report/financial'
     | '/report/members'
-    | '/announcements/new'
-    | '/assistance/new'
     | '/collection-events/$id'
-    | '/contributions/new'
     | '/members/$id'
-    | '/members/new'
     | '/staff/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -465,6 +445,8 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/maintenance'
     | '/member'
+    | '/privacy'
+    | '/terms'
     | '/announcements'
     | '/assistance'
     | '/audit'
@@ -495,12 +477,8 @@ export interface FileRouteTypes {
     | '/report/events'
     | '/report/financial'
     | '/report/members'
-    | '/announcements/new'
-    | '/assistance/new'
     | '/collection-events/$id'
-    | '/contributions/new'
     | '/members/$id'
-    | '/members/new'
     | '/staff/$id'
   id:
     | '__root__'
@@ -511,6 +489,8 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/maintenance'
     | '/member'
+    | '/privacy'
+    | '/terms'
     | '/_shell/announcements'
     | '/_shell/assistance'
     | '/_shell/audit'
@@ -541,12 +521,8 @@ export interface FileRouteTypes {
     | '/report/events'
     | '/report/financial'
     | '/report/members'
-    | '/_shell/announcements/new'
-    | '/_shell/assistance/new'
     | '/_shell/collection-events/$id'
-    | '/_shell/contributions/new'
     | '/_shell/members/$id'
-    | '/_shell/members/new'
     | '/_shell/staff/$id'
   fileRoutesById: FileRoutesById
 }
@@ -558,6 +534,8 @@ export interface RootRouteChildren {
   ForbiddenRoute: typeof ForbiddenRoute
   MaintenanceRoute: typeof MaintenanceRoute
   MemberRoute: typeof MemberRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   ReceiptIdRoute: typeof ReceiptIdRoute
   ReportAssistanceRoute: typeof ReportAssistanceRoute
   ReportCashFlowRoute: typeof ReportCashFlowRoute
@@ -569,6 +547,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/member': {
       id: '/member'
       path: '/member'
@@ -835,26 +827,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellStaffIdRouteImport
       parentRoute: typeof ShellStaffRoute
     }
-    '/_shell/members/new': {
-      id: '/_shell/members/new'
-      path: '/new'
-      fullPath: '/members/new'
-      preLoaderRoute: typeof ShellMembersNewRouteImport
-      parentRoute: typeof ShellMembersRoute
-    }
     '/_shell/members/$id': {
       id: '/_shell/members/$id'
       path: '/$id'
       fullPath: '/members/$id'
       preLoaderRoute: typeof ShellMembersIdRouteImport
       parentRoute: typeof ShellMembersRoute
-    }
-    '/_shell/contributions/new': {
-      id: '/_shell/contributions/new'
-      path: '/new'
-      fullPath: '/contributions/new'
-      preLoaderRoute: typeof ShellContributionsNewRouteImport
-      parentRoute: typeof ShellContributionsRoute
     }
     '/_shell/collection-events/$id': {
       id: '/_shell/collection-events/$id'
@@ -863,45 +841,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellCollectionEventsIdRouteImport
       parentRoute: typeof ShellCollectionEventsRoute
     }
-    '/_shell/assistance/new': {
-      id: '/_shell/assistance/new'
-      path: '/new'
-      fullPath: '/assistance/new'
-      preLoaderRoute: typeof ShellAssistanceNewRouteImport
-      parentRoute: typeof ShellAssistanceRoute
-    }
-    '/_shell/announcements/new': {
-      id: '/_shell/announcements/new'
-      path: '/new'
-      fullPath: '/announcements/new'
-      preLoaderRoute: typeof ShellAnnouncementsNewRouteImport
-      parentRoute: typeof ShellAnnouncementsRoute
-    }
   }
 }
-
-interface ShellAnnouncementsRouteChildren {
-  ShellAnnouncementsNewRoute: typeof ShellAnnouncementsNewRoute
-}
-
-const ShellAnnouncementsRouteChildren: ShellAnnouncementsRouteChildren = {
-  ShellAnnouncementsNewRoute: ShellAnnouncementsNewRoute,
-}
-
-const ShellAnnouncementsRouteWithChildren =
-  ShellAnnouncementsRoute._addFileChildren(ShellAnnouncementsRouteChildren)
-
-interface ShellAssistanceRouteChildren {
-  ShellAssistanceNewRoute: typeof ShellAssistanceNewRoute
-}
-
-const ShellAssistanceRouteChildren: ShellAssistanceRouteChildren = {
-  ShellAssistanceNewRoute: ShellAssistanceNewRoute,
-}
-
-const ShellAssistanceRouteWithChildren = ShellAssistanceRoute._addFileChildren(
-  ShellAssistanceRouteChildren,
-)
 
 interface ShellCollectionEventsRouteChildren {
   ShellCollectionEventsIdRoute: typeof ShellCollectionEventsIdRoute
@@ -916,25 +857,12 @@ const ShellCollectionEventsRouteWithChildren =
     ShellCollectionEventsRouteChildren,
   )
 
-interface ShellContributionsRouteChildren {
-  ShellContributionsNewRoute: typeof ShellContributionsNewRoute
-}
-
-const ShellContributionsRouteChildren: ShellContributionsRouteChildren = {
-  ShellContributionsNewRoute: ShellContributionsNewRoute,
-}
-
-const ShellContributionsRouteWithChildren =
-  ShellContributionsRoute._addFileChildren(ShellContributionsRouteChildren)
-
 interface ShellMembersRouteChildren {
   ShellMembersIdRoute: typeof ShellMembersIdRoute
-  ShellMembersNewRoute: typeof ShellMembersNewRoute
 }
 
 const ShellMembersRouteChildren: ShellMembersRouteChildren = {
   ShellMembersIdRoute: ShellMembersIdRoute,
-  ShellMembersNewRoute: ShellMembersNewRoute,
 }
 
 const ShellMembersRouteWithChildren = ShellMembersRoute._addFileChildren(
@@ -954,11 +882,11 @@ const ShellStaffRouteWithChildren = ShellStaffRoute._addFileChildren(
 )
 
 interface ShellRouteChildren {
-  ShellAnnouncementsRoute: typeof ShellAnnouncementsRouteWithChildren
-  ShellAssistanceRoute: typeof ShellAssistanceRouteWithChildren
+  ShellAnnouncementsRoute: typeof ShellAnnouncementsRoute
+  ShellAssistanceRoute: typeof ShellAssistanceRoute
   ShellAuditRoute: typeof ShellAuditRoute
   ShellCollectionEventsRoute: typeof ShellCollectionEventsRouteWithChildren
-  ShellContributionsRoute: typeof ShellContributionsRouteWithChildren
+  ShellContributionsRoute: typeof ShellContributionsRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
   ShellDocumentsRoute: typeof ShellDocumentsRoute
   ShellFinancialsRoute: typeof ShellFinancialsRoute
@@ -972,11 +900,11 @@ interface ShellRouteChildren {
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
-  ShellAnnouncementsRoute: ShellAnnouncementsRouteWithChildren,
-  ShellAssistanceRoute: ShellAssistanceRouteWithChildren,
+  ShellAnnouncementsRoute: ShellAnnouncementsRoute,
+  ShellAssistanceRoute: ShellAssistanceRoute,
   ShellAuditRoute: ShellAuditRoute,
   ShellCollectionEventsRoute: ShellCollectionEventsRouteWithChildren,
-  ShellContributionsRoute: ShellContributionsRouteWithChildren,
+  ShellContributionsRoute: ShellContributionsRoute,
   ShellDashboardRoute: ShellDashboardRoute,
   ShellDocumentsRoute: ShellDocumentsRoute,
   ShellFinancialsRoute: ShellFinancialsRoute,
@@ -1032,6 +960,8 @@ const rootRouteChildren: RootRouteChildren = {
   ForbiddenRoute: ForbiddenRoute,
   MaintenanceRoute: MaintenanceRoute,
   MemberRoute: MemberRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   ReceiptIdRoute: ReceiptIdRoute,
   ReportAssistanceRoute: ReportAssistanceRoute,
   ReportCashFlowRoute: ReportCashFlowRoute,

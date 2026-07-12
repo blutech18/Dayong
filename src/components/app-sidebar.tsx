@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Users, Wallet, CalendarDays, HeartHandshake,
-  Landmark, FolderOpen, Megaphone, BarChart3, Bell, ScrollText,
-  Settings, UserCircle, Shield, Sparkles, UsersRound, ChevronLeft, ChevronRight
+  LayoutDashboard,
+  Users,
+  Wallet,
+  CalendarDays,
+  HeartHandshake,
+  Landmark,
+  FolderOpen,
+  Megaphone,
+  BarChart3,
+  Bell,
+  ScrollText,
+  Settings,
+  UserCircle,
+  Shield,
+  UsersRound,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const groups = [
   {
     label: "Overview",
-    items: [
-      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    ],
+    items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
   },
   {
     label: "Members & Collections",
@@ -24,9 +36,7 @@ const groups = [
   },
   {
     label: "Assistance",
-    items: [
-      { to: "/assistance", label: "Assistance Requests", icon: HeartHandshake, badge: "6" },
-    ],
+    items: [{ to: "/assistance", label: "Assistance Requests", icon: HeartHandshake, badge: "6" }],
   },
   {
     label: "Finance & Records",
@@ -46,7 +56,15 @@ const groups = [
   },
 ] as const;
 
-export function AppSidebar({ open, onClose, onToggleCollapse }: { open: boolean; onClose: () => void; onToggleCollapse?: () => void }) {
+export function AppSidebar({
+  open,
+  onClose,
+  onToggleCollapse,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onToggleCollapse?: () => void;
+}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -64,16 +82,16 @@ export function AppSidebar({ open, onClose, onToggleCollapse }: { open: boolean;
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 lg:sticky lg:top-0 lg:h-screen",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-          "w-72 [.sidebar-collapsed_&]:w-[4.5rem]"
+          "w-72 [.sidebar-collapsed_&]:w-[4.5rem]",
         )}
       >
         <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border pl-5">
-          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-sm">
-            <Sparkles className="h-4 w-4" />
-          </div>
+          <img src="/dayong.png" alt="DAYONG logo" className="h-8 w-8 shrink-0 object-contain" />
           <div className="flex flex-col min-w-0 overflow-hidden transition-all duration-300 w-[200px] opacity-100 ml-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0 [.sidebar-collapsed_&]:ml-0">
             <div className="truncate text-sm font-semibold tracking-tight">DAYONG</div>
-            <div className="truncate text-[11px] text-muted-foreground">Member Assistance System</div>
+            <div className="truncate text-[11px] text-sidebar-foreground/70 dark:text-muted-foreground">
+              Member Assistance System
+            </div>
           </div>
         </div>
 
@@ -81,7 +99,7 @@ export function AppSidebar({ open, onClose, onToggleCollapse }: { open: boolean;
           {groups.map((group) => (
             <div key={group.label} className="mb-3">
               <div className="relative mb-1 mt-3 px-2">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80 overflow-hidden whitespace-nowrap transition-all duration-300 max-w-[200px] opacity-100 [.sidebar-collapsed_&]:max-w-0 [.sidebar-collapsed_&]:opacity-0">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 dark:text-muted-foreground/80 overflow-hidden whitespace-nowrap transition-all duration-300 max-w-[200px] opacity-100 [.sidebar-collapsed_&]:max-w-0 [.sidebar-collapsed_&]:opacity-0">
                   {group.label}
                 </div>
                 <div className="absolute left-5 top-1/2 w-6 -translate-x-1/2 -translate-y-1/2 border-t border-sidebar-border opacity-0 transition-opacity duration-300 [.sidebar-collapsed_&]:opacity-100 pointer-events-none" />
@@ -111,10 +129,14 @@ export function AppSidebar({ open, onClose, onToggleCollapse }: { open: boolean;
                         <div className="flex items-center overflow-hidden transition-all duration-300 flex-1 opacity-100 pr-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0">
                           <span className="flex-1 truncate">{item.label}</span>
                           {"badge" in item && item.badge && (
-                            <span className={cn(
-                              "ml-auto shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold",
-                              active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground",
-                            )}>
+                            <span
+                              className={cn(
+                                "ml-auto shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold",
+                                active
+                                  ? "bg-primary/15 text-primary"
+                                  : "bg-muted text-muted-foreground",
+                              )}
+                            >
                               {item.badge}
                             </span>
                           )}

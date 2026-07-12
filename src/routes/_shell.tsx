@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { CommandPalette } from "@/components/command-palette";
 import { ShortcutsDialog } from "@/components/shortcuts-dialog";
-
-// MOCK AUTH: In a real app, you would check a real auth provider here.
-// For the prototype, we assume if they hit a shell route, they are logged in.
-const isAuthenticated = () => true; 
+import { requireRole, STAFF_ROLES } from "@/lib/auth-guard";
 
 export const Route = createFileRoute("/_shell")({
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw redirect({ to: "/auth/login" });
-    }
+  // Only staff/admin roles may access the back-office shell.
+  beforeLoad: async () => {
+    const user = await requireRole(STAFF_ROLES);
+    return { user };
   },
   component: ShellLayout,
 });
@@ -46,15 +43,13 @@ function ShellLayout() {
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
-      <AppSidebar 
-        open={open} 
-        onClose={() => setOpen(false)} 
+      <AppSidebar
+        open={open}
+        onClose={() => setOpen(false)}
         onToggleCollapse={handleToggleCollapse}
       />
       <div className="flex min-w-0 flex-1 flex-col transition-all duration-300">
-        <AppTopbar 
-          onOpenSidebar={() => setOpen(true)} 
-        />
+        <AppTopbar onOpenSidebar={() => setOpen(true)} />
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">
           <Outlet />
         </main>

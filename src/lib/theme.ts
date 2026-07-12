@@ -30,7 +30,11 @@ export const themeInitScript = `
     var k='${STORAGE_KEY}';
     var t=localStorage.getItem(k);
     if(t!=='light'&&t!=='dark')t='dark';
-    if(t==='dark')document.documentElement.classList.add('dark');
+    if(t==='dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     
     if(localStorage.getItem('sidebar-collapsed')==='true'){
       document.documentElement.classList.add('sidebar-collapsed');

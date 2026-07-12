@@ -1,17 +1,25 @@
+import type { SVGProps } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bell, CreditCard, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatPHP, formatDate } from "@/lib/format";
+import { getMemberOverview } from "@/server/functions/member-portal";
 
 export const Route = createFileRoute("/member/dashboard")({
   head: () => ({ meta: [{ title: "Member Dashboard — DAYONG" }] }),
+  loader: () => getMemberOverview(),
   component: MemberDashboard,
 });
 
 function MemberDashboard() {
+  const { member, pendingAssistance, contributionsTotal, announcements } = Route.useLoaderData();
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold tracking-tight">Welcome back, Juan!</h1>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">
+          Welcome back, {member.firstName}!
+        </h1>
         <p className="text-sm text-muted-foreground">Here is your membership overview.</p>
       </div>
 
@@ -21,17 +29,28 @@ function MemberDashboard() {
             <h3 className="tracking-tight text-sm font-medium">Status</h3>
             <UserIcon className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold text-green-500">Active</div>
-          <p className="text-xs text-muted-foreground">Member since 2022</p>
+          <div
+            className={
+              "text-2xl font-bold capitalize " +
+              (member.status === "active" ? "text-green-500" : "text-muted-foreground")
+            }
+          >
+            {member.status}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Member since {new Date(member.joinedAt).getFullYear()}
+          </p>
         </div>
 
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Outstanding Balance</h3>
+            <h3 className="tracking-tight text-sm font-medium">Total Contributions</h3>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">₱0.00</div>
-          <p className="text-xs text-muted-foreground">Up to date on contributions</p>
+          <div className="text-2xl font-bold">{formatPHP(contributionsTotal)}</div>
+          <p className="text-xs text-muted-foreground">
+            Last payment {formatDate(member.lastPaymentAt)}
+          </p>
         </div>
 
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
@@ -39,23 +58,29 @@ function MemberDashboard() {
             <h3 className="tracking-tight text-sm font-medium">Pending Assistance</h3>
             <HeartPulse className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">0</div>
-          <p className="text-xs text-muted-foreground">No active requests</p>
+          <div className="text-2xl font-bold">{pendingAssistance}</div>
+          <p className="text-xs text-muted-foreground">
+            {pendingAssistance === 0 ? "No active requests" : "Awaiting review"}
+          </p>
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-xl border bg-card shadow-sm p-6">
-          <h2 className="font-semibold mb-4 flex items-center gap-2"><Bell className="h-4 w-4" /> Recent Announcements</h2>
+          <h2 className="font-semibold mb-4 flex items-center gap-2">
+            <Bell className="h-4 w-4" /> Recent Announcements
+          </h2>
           <div className="space-y-4">
-            <div className="border-b pb-4 last:border-0 last:pb-0">
-              <h4 className="font-medium">Upcoming Monthly Meeting</h4>
-              <p className="text-sm text-muted-foreground mt-1">Please join us for the monthly general assembly this coming Sunday.</p>
-            </div>
-            <div className="border-b pb-4 last:border-0 last:pb-0">
-              <h4 className="font-medium">New Bereavement Assistance Policy</h4>
-              <p className="text-sm text-muted-foreground mt-1">We have updated the document requirements for bereavement claims.</p>
-            </div>
+            {announcements.length === 0 && (
+              <p className="text-sm text-muted-foreground">No announcements right now.</p>
+            )}
+            {announcements.map((a) => (
+              <div key={a.id} className="border-b pb-4 last:border-0 last:pb-0">
+                <h4 className="font-medium">{a.title}</h4>
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.body}</p>
+                <p className="text-xs text-muted-foreground mt-1">{formatDate(a.publishedAt)}</p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -65,7 +90,9 @@ function MemberDashboard() {
             <Link to="/member/assistance">
               <div className="flex flex-col items-start gap-1">
                 <span className="font-medium">Request Assistance</span>
-                <span className="text-xs text-muted-foreground font-normal">Apply for medical, bereavement, or other assistance</span>
+                <span className="text-xs text-muted-foreground font-normal">
+                  Apply for medical, bereavement, or other assistance
+                </span>
               </div>
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -74,7 +101,9 @@ function MemberDashboard() {
             <Link to="/member/contributions">
               <div className="flex flex-col items-start gap-1">
                 <span className="font-medium">View Contribution Ledger</span>
-                <span className="text-xs text-muted-foreground font-normal">Check your payment history and printable receipts</span>
+                <span className="text-xs text-muted-foreground font-normal">
+                  Check your payment history and printable receipts
+                </span>
               </div>
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -85,7 +114,7 @@ function MemberDashboard() {
   );
 }
 
-function UserIcon(props: any) {
+function UserIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

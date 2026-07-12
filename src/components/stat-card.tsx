@@ -3,7 +3,12 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function StatCard({
-  label, value, delta, deltaLabel, icon: Icon, tone = "primary",
+  label,
+  value,
+  delta,
+  deltaLabel,
+  icon: Icon,
+  tone = "primary",
 }: {
   label: string;
   value: string;
@@ -36,11 +41,17 @@ export function StatCard({
       </div>
       {typeof delta === "number" && (
         <div className="mt-4 flex items-center gap-1.5 text-xs">
-          <span className={cn(
-            "inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-medium",
-            positive ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive",
-          )}>
-            {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+          <span
+            className={cn(
+              "inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-medium",
+              positive ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive",
+            )}
+          >
+            {positive ? (
+              <ArrowUpRight className="h-3 w-3" />
+            ) : (
+              <ArrowDownRight className="h-3 w-3" />
+            )}
             {Math.abs(delta)}%
           </span>
           {deltaLabel && <span className="text-muted-foreground">{deltaLabel}</span>}
