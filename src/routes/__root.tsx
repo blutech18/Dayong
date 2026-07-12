@@ -18,7 +18,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { themeInitScript } from "../lib/theme";
 import { Toaster } from "@/components/ui/sonner";
-import { RouteProgress } from "@/components/route-progress";
 
 function NotFoundComponent() {
   return (
@@ -142,7 +141,6 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <RouteProgress />
       <Outlet />
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
