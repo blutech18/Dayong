@@ -124,7 +124,9 @@ export function AppSidebar({
                         )}
                       >
                         <div className="flex w-10 shrink-0 items-center justify-center">
-                          <Icon className={cn("h-5 w-5", active && "text-primary")} />
+                          {/* Icon inherits the link's text color (white when
+                              active, off-white otherwise) for proper contrast. */}
+                          <Icon className="h-5 w-5" />
                         </div>
                         <div className="flex items-center overflow-hidden transition-all duration-300 flex-1 opacity-100 pr-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0">
                           <span className="flex-1 truncate">{item.label}</span>
@@ -133,8 +135,8 @@ export function AppSidebar({
                               className={cn(
                                 "ml-auto shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold",
                                 active
-                                  ? "bg-primary/15 text-primary"
-                                  : "bg-muted text-muted-foreground",
+                                  ? "bg-sidebar-accent-foreground/20 text-sidebar-accent-foreground"
+                                  : "bg-sidebar-foreground/15 text-sidebar-foreground/80",
                               )}
                             >
                               {item.badge}
