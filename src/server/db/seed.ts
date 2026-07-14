@@ -215,7 +215,7 @@ async function main() {
     .insert(appSettings)
     .values({
       id: "singleton",
-      orgName: "DAYONG Neighborhood Mutual Aid",
+      orgName: "Pagtukaw Lifecare Philippines",
       registrationNo: "CDA-2019-04021",
       contactEmail: "hello@dayong.org",
       phone: "+63 917 555 0142",

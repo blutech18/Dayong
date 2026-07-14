@@ -6,7 +6,10 @@ import { getFinancialReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/cash-flow")({
   head: () => ({
-    meta: [{ title: "Cash Flow Report — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Cash Flow Report — Pagtukaw Lifecare" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   beforeLoad: () => requireAuth(),
   loader: () => getFinancialReport(),

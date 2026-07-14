@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 
 export const Route = createFileRoute("/_shell/reports")({
-  head: () => ({ meta: [{ title: "Reports — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Reports — Pagtukaw Lifecare" }] }),
   component: ReportsPage,
 });
 
@@ -92,12 +92,14 @@ function ReportsPage() {
             key={r.key}
             className="group flex flex-col rounded-2xl border border-border bg-card p-5 transition hover:border-primary/30 hover:shadow-sm"
           >
-            <div className={"grid h-11 w-11 place-items-center rounded-xl " + toneClass[r.tone]}>
-              <r.icon className="h-5 w-5" />
+            <div className="flex items-center gap-3">
+              <div className={"grid h-11 w-11 shrink-0 place-items-center rounded-xl " + toneClass[r.tone]}>
+                <r.icon className="h-5 w-5" />
+              </div>
+              <h3 className="font-display text-base font-semibold leading-tight">{r.title}</h3>
             </div>
-            <h3 className="mt-3 font-display text-base font-semibold">{r.title}</h3>
-            <p className="mt-1 flex-1 text-sm text-muted-foreground">{r.desc}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <p className="mt-3 sm:mt-4 flex-1 text-sm text-muted-foreground">{r.desc}</p>
+            <div className="mt-5 flex flex-wrap gap-2">
               <Button size="sm" variant="outline" className="gap-1.5">
                 <FileDown className="h-4 w-4" />
                 PDF

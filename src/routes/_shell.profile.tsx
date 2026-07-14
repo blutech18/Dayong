@@ -21,7 +21,7 @@ const roleLabels: Record<string, string> = {
 };
 
 export const Route = createFileRoute("/_shell/profile")({
-  head: () => ({ meta: [{ title: "Profile — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Profile — Pagtukaw Lifecare" }] }),
   loader: () => getProfilePage(),
   component: ProfilePage,
 });

@@ -53,7 +53,11 @@ export function ConsentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex h-[92vh] max-h-[92vh] w-[calc(100%-1.5rem)] max-w-4xl flex-col gap-0 p-0 sm:w-full sm:h-auto sm:max-h-[88vh]">
         <DialogHeader className="flex flex-row items-center gap-3 space-y-0 border-b border-border p-5 text-left sm:p-6">
-          <img src="/dayong.png" alt="DAYONG logo" className="h-11 w-11 shrink-0 object-contain" />
+          <img
+            src="/dayong.png"
+            alt="Pagtukaw Lifecare Philippines logo"
+            className="h-11 w-11 shrink-0 object-contain"
+          />
           <div className="min-w-0">
             <DialogTitle className="truncate text-base sm:text-lg">
               Terms of Service & Privacy Policy

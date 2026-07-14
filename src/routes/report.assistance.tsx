@@ -6,7 +6,10 @@ import { getAssistanceReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/assistance")({
   head: () => ({
-    meta: [{ title: "Assistance Report — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Assistance Report — Pagtukaw Lifecare" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   beforeLoad: () => requireAuth(),
   loader: () => getAssistanceReport(),

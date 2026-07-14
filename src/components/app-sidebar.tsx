@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const groups = [
+const groupsTemplate = [
   {
     label: "Overview",
     items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
@@ -29,14 +29,14 @@ const groups = [
   {
     label: "Members & Collections",
     items: [
-      { to: "/members", label: "Members", icon: Users, badge: "48" },
+      { to: "/members", label: "Members", icon: Users, badgeId: "members", badgeCount: "48" },
       { to: "/contributions", label: "Contributions", icon: Wallet },
       { to: "/collection-events", label: "Collection Events", icon: CalendarDays },
     ],
   },
   {
     label: "Assistance",
-    items: [{ to: "/assistance", label: "Assistance Requests", icon: HeartHandshake, badge: "6" }],
+    items: [{ to: "/assistance", label: "Assistance Requests", icon: HeartHandshake, badgeId: "assistance", badgeCount: "6" }],
   },
   {
     label: "Finance & Records",
@@ -67,7 +67,26 @@ export function AppSidebar({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [seen, setSeen] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setMounted(true);
+    setSeen({
+      members: localStorage.getItem("seen-members") === "true",
+      assistance: localStorage.getItem("seen-assistance") === "true",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (pathname.startsWith("/members") && !seen.members) {
+      localStorage.setItem("seen-members", "true");
+      setSeen((s) => ({ ...s, members: true }));
+    }
+    if (pathname.startsWith("/assistance") && !seen.assistance) {
+      localStorage.setItem("seen-assistance", "true");
+      setSeen((s) => ({ ...s, assistance: true }));
+    }
+  }, [pathname, seen]);
 
   return (
     <>
@@ -86,9 +105,13 @@ export function AppSidebar({
         )}
       >
         <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border pl-5">
-          <img src="/dayong.png" alt="DAYONG logo" className="h-8 w-8 shrink-0 object-contain" />
+          <img
+            src="/dayong.png"
+            alt="Pagtukaw Lifecare Philippines logo"
+            className="h-8 w-8 shrink-0 object-contain"
+          />
           <div className="flex flex-col min-w-0 overflow-hidden transition-all duration-300 w-[200px] opacity-100 ml-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0 [.sidebar-collapsed_&]:ml-0">
-            <div className="truncate text-sm font-semibold tracking-tight">DAYONG</div>
+            <div className="truncate text-sm font-semibold tracking-tight">Pagtukaw Lifecare</div>
             <div className="truncate text-[11px] text-sidebar-foreground/70 dark:text-muted-foreground">
               Member Assistance System
             </div>
@@ -96,7 +119,7 @@ export function AppSidebar({
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {groups.map((group) => (
+          {groupsTemplate.map((group) => (
             <div key={group.label} className="mb-3">
               <div className="relative mb-1 mt-3 px-2">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 dark:text-muted-foreground/80 overflow-hidden whitespace-nowrap transition-all duration-300 max-w-[200px] opacity-100 [.sidebar-collapsed_&]:max-w-0 [.sidebar-collapsed_&]:opacity-0">
@@ -110,6 +133,12 @@ export function AppSidebar({
                     pathname === item.to ||
                     (item.to !== "/dashboard" && pathname.startsWith(item.to));
                   const Icon = item.icon;
+                  
+                  let badge = null;
+                  if ("badgeId" in item && mounted) {
+                    if (!seen[item.badgeId]) badge = item.badgeCount;
+                  }
+
                   return (
                     <li key={item.to}>
                       <Link
@@ -130,7 +159,7 @@ export function AppSidebar({
                         </div>
                         <div className="flex items-center overflow-hidden transition-all duration-300 flex-1 opacity-100 pr-3 [.sidebar-collapsed_&]:w-0 [.sidebar-collapsed_&]:opacity-0">
                           <span className="flex-1 truncate">{item.label}</span>
-                          {"badge" in item && item.badge && (
+                          {badge && (
                             <span
                               className={cn(
                                 "ml-auto shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold",
@@ -139,7 +168,7 @@ export function AppSidebar({
                                   : "bg-sidebar-foreground/15 text-sidebar-foreground/80",
                               )}
                             >
-                              {item.badge}
+                              {badge}
                             </span>
                           )}
                         </div>

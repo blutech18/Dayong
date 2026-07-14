@@ -1,40 +1,27 @@
 import { useState } from "react";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Calendar,
   MapPin,
   Users,
-  Plus,
   Wallet,
   LayoutGrid,
   CalendarRange,
   ChevronLeft,
   ChevronRight,
-  Loader2,
 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
+import { CreateEventModal } from "@/components/action-modals";
 import { formatPHP, formatDate } from "@/lib/format";
-import { getCollectionEvents, createCollectionEvent } from "@/server/functions/events";
+import { getCollectionEvents } from "@/server/functions/events";
 import type { CollectionEventDTO } from "@/server/services/events.service";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_shell/collection-events")({
-  head: () => ({ meta: [{ title: "Collection Events — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Collection Events — Pagtukaw Lifecare" }] }),
   loader: () => getCollectionEvents(),
   component: EventsPage,
 });
@@ -75,7 +62,7 @@ function EventsPage() {
                 Calendar
               </button>
             </div>
-            <CreateEventDialog />
+            <CreateEventModal />
           </>
         }
       />
@@ -90,130 +77,6 @@ function EventsPage() {
         <GridView events={events} />
       )}
     </div>
-  );
-}
-
-function CreateEventDialog() {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [scheduledAt, setScheduledAt] = useState("");
-  const [location, setLocation] = useState("");
-  const [collectorName, setCollectorName] = useState("");
-  const [targetAmount, setTargetAmount] = useState("");
-  const [expectedMembers, setExpectedMembers] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  async function handleCreate() {
-    if (!name.trim()) return toast.error("Enter an event name.");
-    if (!scheduledAt) return toast.error("Pick a schedule date.");
-    setSaving(true);
-    try {
-      await createCollectionEvent({
-        data: {
-          name: name.trim(),
-          scheduledAt: new Date(scheduledAt).toISOString(),
-          location: location.trim(),
-          collectorName: collectorName.trim(),
-          targetAmount: parseFloat(targetAmount) || 0,
-          expectedMembers: parseInt(expectedMembers) || 0,
-        },
-      });
-      toast.success("Event scheduled", { description: name });
-      setOpen(false);
-      await router.invalidate();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to create event.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" />
-          Create event
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Schedule collection event</DialogTitle>
-          <DialogDescription>Set the schedule, target, and assigned collector.</DialogDescription>
-        </DialogHeader>
-        <div className="grid grid-cols-1 gap-4 pt-2">
-          <div className="grid gap-1.5">
-            <Label htmlFor="ev-name">Event name</Label>
-            <Input
-              id="ev-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Monthly Collection — August 2026"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-1.5">
-              <Label htmlFor="ev-date">Schedule</Label>
-              <Input
-                id="ev-date"
-                type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="ev-loc">Location</Label>
-              <Input
-                id="ev-loc"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Barangay Hall"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="grid gap-1.5">
-              <Label htmlFor="ev-collector">Collector</Label>
-              <Input
-                id="ev-collector"
-                value={collectorName}
-                onChange={(e) => setCollectorName(e.target.value)}
-                placeholder="Name"
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="ev-target">Target (₱)</Label>
-              <Input
-                id="ev-target"
-                type="number"
-                value={targetAmount}
-                onChange={(e) => setTargetAmount(e.target.value)}
-                placeholder="24000"
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="ev-expected">Expected</Label>
-              <Input
-                id="ev-expected"
-                type="number"
-                value={expectedMembers}
-                onChange={(e) => setExpectedMembers(e.target.value)}
-                placeholder="48"
-              />
-            </div>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
-            Cancel
-          </Button>
-          <Button onClick={handleCreate} disabled={saving} className="gap-1.5">
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}Schedule event
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 
@@ -299,26 +162,26 @@ function CalendarView({ events }: { events: CollectionEventDTO[] }) {
   const monthLabel = cursor.toLocaleDateString("en-PH", { month: "long", year: "numeric" });
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="font-display text-lg font-semibold">{monthLabel}</div>
-        <div className="flex items-center gap-1">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="font-display text-xl font-semibold tracking-tight">{monthLabel}</div>
+        <div className="flex items-center gap-1.5">
           <Button
             size="icon"
             variant="outline"
-            className="h-8 w-8"
+            className="h-9 w-9"
             onClick={() => setCursor(new Date(year, month - 1, 1))}
             aria-label="Previous month"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setCursor(new Date())}>
+          <Button size="sm" variant="outline" className="h-9 px-4" onClick={() => setCursor(new Date())}>
             Today
           </Button>
           <Button
             size="icon"
             variant="outline"
-            className="h-8 w-8"
+            className="h-9 w-9"
             onClick={() => setCursor(new Date(year, month + 1, 1))}
             aria-label="Next month"
           >
@@ -326,11 +189,11 @@ function CalendarView({ events }: { events: CollectionEventDTO[] }) {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-border bg-border text-xs">
+      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-border bg-border">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
           <div
             key={d}
-            className="bg-muted/40 px-2 py-1.5 text-center font-medium text-muted-foreground"
+            className="bg-muted/40 px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground"
           >
             {d}
           </div>
@@ -340,30 +203,32 @@ function CalendarView({ events }: { events: CollectionEventDTO[] }) {
           const evs = c ? (eventsByDay.get(key) ?? []) : [];
           const isToday = c && c.toDateString() === new Date().toDateString();
           return (
-            <div key={key} className={cn("min-h-24 bg-card p-1.5", !c && "bg-muted/20")}>
+            <div key={key} className={cn("min-h-[140px] bg-card p-2 sm:p-3 transition-colors hover:bg-muted/50", !c && "bg-muted/20 hover:bg-muted/20")}>
               {c && (
                 <>
                   <div
                     className={cn(
-                      "mb-1 text-right text-[11px] font-medium",
-                      isToday ? "text-primary" : "text-muted-foreground",
+                      "mb-2 text-right text-sm font-semibold",
+                      isToday ? "text-primary" : "text-muted-foreground hover:text-foreground transition-colors",
                     )}
                   >
                     {isToday ? (
-                      <span className="inline-grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground">
+                      <span className="inline-grid h-8 w-8 place-items-center rounded-full bg-primary shadow-sm text-primary-foreground">
                         {c.getDate()}
                       </span>
                     ) : (
-                      c.getDate()
+                      <span className="inline-grid h-8 w-8 place-items-center rounded-full hover:bg-muted transition-colors cursor-default">
+                        {c.getDate()}
+                      </span>
                     )}
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     {evs.map((e) => (
                       <Link
                         key={e.id}
                         to="/collection-events/$id"
                         params={{ id: e.id }}
-                        className="block truncate rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/20"
+                        className="block truncate rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/20 hover:border-primary/30 transition-colors"
                       >
                         {e.name.replace(/^Monthly Collection — /, "")}
                       </Link>

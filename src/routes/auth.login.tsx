@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { login } from "@/server/auth";
 
 export const Route = createFileRoute("/auth/login")({
-  head: () => ({ meta: [{ title: "Sign in — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Pagtukaw Lifecare" }] }),
   component: LoginPage,
 });
 
@@ -39,7 +39,9 @@ function LoginPage() {
     <div className="w-full space-y-8">
       <div>
         <h1 className="font-display text-3xl font-semibold tracking-tight">Welcome back</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Sign in to your DAYONG workspace.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Sign in to your Pagtukaw Lifecare Philippines workspace.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

@@ -9,8 +9,6 @@ import {
   TrendingUp,
   Receipt,
   Printer,
-  ChevronLeft,
-  ChevronRight,
   Loader2,
   Trash2,
 } from "lucide-react";
@@ -33,20 +31,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { StatCard } from "@/components/stat-card";
+import { RecordContributionModal } from "@/components/action-modals";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatPHP, formatDateTime } from "@/lib/format";
-import {
-  getContributionsPage,
-  recordContribution,
-  recordContributionBatch,
-} from "@/server/functions/contributions";
+import { getContributionsPage, recordContributionBatch } from "@/server/functions/contributions";
 
 export const Route = createFileRoute("/_shell/contributions")({
-  head: () => ({ meta: [{ title: "Contributions — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Contributions — Pagtukaw Lifecare" }] }),
   loader: () => getContributionsPage(),
   component: ContributionsPage,
 });
@@ -57,8 +53,6 @@ function ContributionsPage() {
   const { contributions, stats, members } = Route.useLoaderData();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<string>("all");
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
 
   const filtered = useMemo(() => {
     return contributions.filter((c) => {
@@ -70,8 +64,7 @@ function ContributionsPage() {
       return true;
     });
   }, [contributions, q, status]);
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const { page, setPage, paged, pageSize, total } = usePagination(filtered);
 
   const monthCollected = useMemo(() => {
     const now = new Date();
@@ -99,7 +92,14 @@ function ContributionsPage() {
               Export
             </Button>
             <PostBatchModal members={members} />
-            <RecordPaymentDialog members={members} />
+            <RecordContributionModal
+              trigger={
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" />
+                  Record payment
+                </Button>
+              }
+            />
           </>
         }
       />
@@ -178,7 +178,7 @@ function ContributionsPage() {
                 <th className="px-3 py-3 font-medium">Recorded</th>
                 <th className="px-3 py-3 font-medium">Status</th>
                 <th className="px-6 py-3 text-right font-medium">Amount</th>
-                <th className="w-12 px-3 py-3"></th>
+                <th className="px-6 py-3 text-right font-medium">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -200,12 +200,13 @@ function ContributionsPage() {
                   <td className="px-6 py-3 text-right font-semibold tabular-nums">
                     {formatPHP(c.amount)}
                   </td>
-                  <td className="px-3 py-3">
+                  <td className="px-6 py-3 text-right">
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
                       aria-label="Print receipt"
+                      onClick={() => toast.success(`Printing receipt ${c.receiptNo}...`)}
                     >
                       <Printer className="h-4 w-4" />
                     </Button>
@@ -216,144 +217,15 @@ function ContributionsPage() {
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-border p-4 text-sm">
-          <div className="text-xs text-muted-foreground">
-            {filtered.length} contribution{filtered.length === 1 ? "" : "s"} · Page {page} of{" "}
-            {totalPages}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <TablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          label="contributions"
+        />
       </div>
     </div>
-  );
-}
-
-function RecordPaymentDialog({ members }: { members: MemberOption[] }) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [memberId, setMemberId] = useState("");
-  const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"cash" | "gcash" | "bank" | "check">("cash");
-  const [saving, setSaving] = useState(false);
-
-  const reset = () => {
-    setMemberId("");
-    setAmount("");
-    setMethod("cash");
-  };
-
-  async function handleRecord() {
-    const value = parseFloat(amount);
-    if (!memberId) return toast.error("Select a member.");
-    if (!value || value <= 0) return toast.error("Enter a valid amount.");
-    setSaving(true);
-    try {
-      const result = await recordContribution({
-        data: { memberId, amount: value, method, status: "paid" },
-      });
-      toast.success("Contribution recorded", {
-        description: `${result.receiptNo} · ${formatPHP(result.amount)}`,
-      });
-      setOpen(false);
-      reset();
-      await router.invalidate();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to record payment.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" />
-          Record payment
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Record contribution</DialogTitle>
-          <DialogDescription>
-            Enter payment details. A receipt will be generated automatically.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid grid-cols-1 gap-4 pt-2">
-          <div className="grid gap-1.5">
-            <Label htmlFor="member">Member</Label>
-            <Select value={memberId} onValueChange={setMemberId}>
-              <SelectTrigger id="member">
-                <SelectValue placeholder="Search member…" />
-              </SelectTrigger>
-              <SelectContent>
-                {members.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.firstName} {m.lastName} · {m.memberNo}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-1.5">
-              <Label htmlFor="amount">Amount (PHP)</Label>
-              <Input
-                id="amount"
-                type="number"
-                placeholder="500.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="method">Method</Label>
-              <Select value={method} onValueChange={(v) => setMethod(v as typeof method)}>
-                <SelectTrigger id="method">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="gcash">GCash</SelectItem>
-                  <SelectItem value="bank">Bank transfer</SelectItem>
-                  <SelectItem value="check">Check</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="notes">Notes (optional)</Label>
-            <Textarea id="notes" placeholder="Reference numbers, remarks…" rows={3} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
-            Cancel
-          </Button>
-          <Button onClick={handleRecord} disabled={saving} className="gap-1.5">
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-            Record and print receipt
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 

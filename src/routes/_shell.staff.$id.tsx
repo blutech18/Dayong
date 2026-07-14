@@ -27,7 +27,7 @@ type Role = StaffDTO["role"];
 const ROLE_OPTIONS: Role[] = ["admin", "treasurer", "collector", "secretary", "viewer"];
 
 export const Route = createFileRoute("/_shell/staff/$id")({
-  head: ({ params }) => ({ meta: [{ title: `Staff · ${params.id} — DAYONG` }] }),
+  head: ({ params }) => ({ meta: [{ title: `Staff · ${params.id} — Pagtukaw Lifecare` }] }),
   loader: async ({ params }): Promise<StaffMemberDetail> => {
     const detail = await getStaffMember({ data: params.id });
     if (!detail) throw notFound();

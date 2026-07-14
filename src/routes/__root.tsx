@@ -92,14 +92,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DAYONG — Member Assistance & Collection Management" },
+      { title: "Pagtukaw Lifecare Philippines — Member Assistance & Collection Management" },
       {
         name: "description",
         content:
           "Enterprise-grade platform for managing members, contributions, collection events, assistance requests, and financials.",
       },
-      { name: "author", content: "DAYONG" },
-      { property: "og:title", content: "DAYONG — Member Assistance & Collection Management" },
+      { name: "author", content: "Pagtukaw Lifecare Philippines" },
+      {
+        property: "og:title",
+        content: "Pagtukaw Lifecare Philippines — Member Assistance & Collection Management",
+      },
       {
         property: "og:description",
         content: "Members, contributions, collections and assistance — one modern system.",

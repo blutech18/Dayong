@@ -19,17 +19,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatPHP, formatDate } from "@/lib/format";
 import { getFinancialsOverview } from "@/server/functions/financials";
 
 export const Route = createFileRoute("/_shell/financials")({
-  head: () => ({ meta: [{ title: "Financial Management — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Financial Management — Pagtukaw Lifecare" }] }),
   loader: () => getFinancialsOverview(),
   component: FinancialsPage,
 });
 
 function FinancialsPage() {
   const { stats, monthly, ledger } = Route.useLoaderData();
+  const { page, setPage, paged, pageSize, total } = usePagination(ledger);
   return (
     <div className="space-y-6">
       <PageHeader
@@ -176,7 +179,7 @@ function FinancialsPage() {
                   </td>
                 </tr>
               )}
-              {ledger.map((r) => (
+              {paged.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/40">
                   <td className="px-6 py-3 text-xs text-muted-foreground">{formatDate(r.date)}</td>
                   <td className="px-3 py-3 font-medium">{r.ref}</td>
@@ -211,6 +214,13 @@ function FinancialsPage() {
             </tbody>
           </table>
         </div>
+        <TablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          label="transactions"
+        />
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import {
-  Plus,
   Search,
   HeartHandshake,
   Clock,
@@ -11,62 +10,39 @@ import {
   Filter,
   Eye,
   Loader2,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { StatCard } from "@/components/stat-card";
+import { NewAssistanceModal } from "@/components/action-modals";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatPHP, formatDate, formatDateTime } from "@/lib/format";
-import {
-  getAssistancePage,
-  transitionAssistance,
-  createAssistance,
-} from "@/server/functions/assistance";
-import { getMemberOptions, type MemberOption } from "@/server/functions/members";
+import { getAssistancePage, transitionAssistance } from "@/server/functions/assistance";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_shell/assistance")({
-  head: () => ({ meta: [{ title: "Assistance Requests — DAYONG" }] }),
-  loader: async () => {
-    const [page, members] = await Promise.all([getAssistancePage(), getMemberOptions()]);
-    return { ...page, members };
-  },
+  head: () => ({ meta: [{ title: "Assistance Requests — Pagtukaw Lifecare" }] }),
+  loader: () => getAssistancePage(),
   component: AssistancePage,
 });
 
 type WorkflowAction = "verify" | "approve" | "reject" | "release";
 
 function AssistancePage() {
-  const { requests, stats, members } = Route.useLoaderData();
+  const { requests, stats } = Route.useLoaderData();
   const router = useRouter();
   const [tab, setTab] = useState<string>("all");
   const [q, setQ] = useState("");
@@ -82,6 +58,7 @@ function AssistancePage() {
       return false;
     return true;
   });
+  const { page, setPage, paged, pageSize, total } = usePagination(list);
 
   const active = requests.find((r) => r.id === selected) ?? null;
 
@@ -105,7 +82,7 @@ function AssistancePage() {
       <PageHeader
         title="Assistance Requests"
         description="Review, verify, and release assistance to members in need."
-        actions={<NewAssistanceModal members={members} />}
+        actions={<NewAssistanceModal />}
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -132,7 +109,13 @@ function AssistancePage() {
 
       <div className="rounded-2xl border border-border bg-card">
         <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
-          <Tabs value={tab} onValueChange={setTab}>
+          <Tabs
+            value={tab}
+            onValueChange={(v) => {
+              setTab(v);
+              setPage(1);
+            }}
+          >
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -147,7 +130,10 @@ function AssistancePage() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search request no, name…"
                 className="h-9 w-full rounded-lg border border-input bg-muted/30 pl-9 pr-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring/40"
               />
@@ -170,11 +156,11 @@ function AssistancePage() {
                 <th className="px-3 py-3 font-medium">Docs</th>
                 <th className="px-3 py-3 font-medium">Status</th>
                 <th className="px-6 py-3 text-right font-medium">Amount</th>
-                <th className="w-12 px-3 py-3"></th>
+                <th className="px-3 py-3 font-medium text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {list.map((r) => (
+              {paged.map((r) => (
                 <tr
                   key={r.id}
                   className="cursor-pointer hover:bg-muted/40"
@@ -203,7 +189,7 @@ function AssistancePage() {
                   <td className="px-6 py-3 text-right font-semibold tabular-nums">
                     {formatPHP(r.amount)}
                   </td>
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-3 text-center">
                     <Button
                       size="icon"
                       variant="ghost"
@@ -218,82 +204,173 @@ function AssistancePage() {
             </tbody>
           </table>
         </div>
+        <TablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          label="requests"
+        />
       </div>
 
-      <Sheet open={!!active} onOpenChange={(o) => !o && setSelected(null)}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+      <Dialog open={!!active} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="w-full sm:max-w-2xl p-0 overflow-hidden [&>button]:hidden">
           {active && (
-            <>
-              <SheetHeader>
-                <div className="flex items-center gap-2">
-                  <SheetTitle>{active.requestNo}</SheetTitle>
-                  <StatusBadge status={active.status} />
+            <div className="flex flex-col max-h-[90vh]">
+              {/* Header */}
+              <div className="shrink-0 px-6 py-6 border-b border-border bg-muted/10 relative">
+                <div className="sr-only">
+                  <DialogHeader>
+                    <DialogTitle>{active.requestNo}</DialogTitle>
+                    <DialogDescription>Assistance Request details</DialogDescription>
+                  </DialogHeader>
                 </div>
-                <SheetDescription>Submitted {formatDateTime(active.submittedAt)}</SheetDescription>
-              </SheetHeader>
-
-              <div className="mt-6 space-y-6">
-                <div className="rounded-xl border border-border p-4">
-                  <div className="font-medium">{active.memberName}</div>
-                  <div className="text-xs text-muted-foreground">{active.memberNo}</div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Category" value={active.category} />
-                  <Field label="Amount requested" value={formatPHP(active.amount)} />
-                  <Field label="Reviewer" value={active.reviewedBy ?? "Unassigned"} />
-                  <Field label="Documents" value={`${active.documentsCount} file(s)`} />
-                </div>
-
-                <div>
-                  <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Reason
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">{active.memberName}</h2>
+                    <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="font-medium text-foreground/80">{active.memberNo}</span>
+                      <span>•</span>
+                      <span>{active.requestNo}</span>
+                    </div>
                   </div>
-                  <p className="text-sm">{active.reason}</p>
+                  <div className="flex flex-col items-end gap-2">
+                    <StatusBadge status={active.status} />
+                    <span className="text-xs text-muted-foreground">
+                      {formatDate(active.submittedAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scrollable Body */}
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 scroll-thin min-h-0 bg-muted/5">
+                {/* Metrics */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Amount Requested
+                    </div>
+                    <div className="mt-2 text-2xl font-bold text-foreground">
+                      {formatPHP(active.amount)}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Category
+                    </div>
+                    <div className="mt-2 text-2xl font-bold capitalize text-foreground">
+                      {active.category}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Documents
+                    </div>
+                    <div className="mt-2 flex items-baseline gap-1 text-2xl font-bold text-foreground">
+                      {active.documentsCount}
+                      <span className="text-sm font-medium text-muted-foreground">file(s)</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Approval workflow
+                {/* Reason & Reviewer */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="md:col-span-2 rounded-xl border border-border bg-card p-5 shadow-sm">
+                    <h4 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      Reason for Request
+                    </h4>
+                    <p className="text-sm leading-relaxed text-foreground/90">
+                      {active.reason}
+                    </p>
                   </div>
-                  <ol className="space-y-3">
+                  <div className="rounded-xl border border-border bg-card p-5 shadow-sm flex flex-col justify-center">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Assigned Reviewer
+                    </div>
+                    <div className="mt-2 font-medium text-foreground">
+                      {active.reviewedBy ?? "Unassigned"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Workflow Stepper */}
+                <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                  <h4 className="mb-6 text-xs font-bold uppercase tracking-wider text-muted-foreground text-center">
+                    Approval Progress
+                  </h4>
+                  <div className="flex items-center justify-between">
                     {[
                       { step: "Submitted", done: true },
-                      { step: "Documents verified", done: active.status !== "pending" },
+                      { step: "Verified", done: active.status !== "pending" },
                       { step: "Approved", done: ["approved", "released"].includes(active.status) },
                       { step: "Released", done: active.status === "released" },
-                    ].map((s, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm">
-                        <span
+                    ].map((s, i, arr) => (
+                      <div key={i} className="relative flex flex-1 flex-col items-center gap-3">
+                        {i !== arr.length - 1 && (
+                          <div
+                            className={cn(
+                              "absolute left-[50%] right-[-50%] top-3.5 h-[2px]",
+                              s.done ? "bg-primary" : "bg-muted"
+                            )}
+                          />
+                        )}
+                        <div
                           className={cn(
-                            "grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold",
+                            "relative z-10 grid h-7 w-7 place-items-center rounded-full border-2 text-[11px] font-bold transition-colors",
                             s.done
-                              ? "bg-success text-success-foreground"
-                              : "bg-muted text-muted-foreground",
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-muted bg-background text-muted-foreground"
                           )}
                         >
                           {i + 1}
-                        </span>
-                        <span className={s.done ? "" : "text-muted-foreground"}>{s.step}</span>
-                      </li>
+                        </div>
+                        <div
+                          className={cn(
+                            "text-xs font-semibold",
+                            s.done ? "text-foreground" : "text-muted-foreground"
+                          )}
+                        >
+                          {s.step}
+                        </div>
+                      </div>
                     ))}
-                  </ol>
+                  </div>
                 </div>
+              </div>
 
-                <div className="flex flex-wrap gap-2">
+              {/* Footer / Actions */}
+              <div className="shrink-0 px-6 py-4 border-t border-border bg-background flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="w-full sm:w-auto flex justify-center sm:justify-start">
+                  {active.status !== "released" && active.status !== "rejected" ? (
+                    <Button
+                      variant="outline"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive px-6 w-full sm:w-auto"
+                      disabled={saving}
+                      onClick={() => runAction(active.id, "reject")}
+                    >
+                      Reject
+                    </Button>
+                  ) : (
+                    <div className="text-sm font-medium text-muted-foreground hidden sm:block">
+                      This request is {active.status}.
+                    </div>
+                  )}
+                </div>
+                <div className="w-full sm:w-auto flex flex-col-reverse sm:flex-row items-center gap-3">
+                  <Button
+                    variant="outline"
+                    className="px-6 w-full sm:w-auto"
+                    onClick={() => setSelected(null)}
+                  >
+                    Close
+                  </Button>
                   {active.status !== "released" && active.status !== "rejected" && (
                     <>
-                      <Button
-                        variant="outline"
-                        className="flex-1 text-destructive hover:text-destructive"
-                        disabled={saving}
-                        onClick={() => runAction(active.id, "reject")}
-                      >
-                        Reject
-                      </Button>
                       {active.status === "pending" && (
                         <Button
-                          className="flex-1 gap-1.5"
+                          className="gap-2 px-6 w-full sm:w-auto"
                           disabled={saving}
                           onClick={() => runAction(active.id, "verify")}
                         >
@@ -303,7 +380,7 @@ function AssistancePage() {
                       )}
                       {active.status === "under_review" && (
                         <Button
-                          className="flex-1 gap-1.5"
+                          className="gap-2 px-6 w-full sm:w-auto"
                           disabled={saving}
                           onClick={() => runAction(active.id, "approve")}
                         >
@@ -313,7 +390,7 @@ function AssistancePage() {
                       )}
                       {active.status === "approved" && (
                         <Button
-                          className="flex-1 gap-1.5"
+                          className="gap-2 px-6 w-full sm:w-auto"
                           disabled={saving}
                           onClick={() => runAction(active.id, "release")}
                         >
@@ -323,17 +400,12 @@ function AssistancePage() {
                       )}
                     </>
                   )}
-                  {(active.status === "released" || active.status === "rejected") && (
-                    <div className="flex-1 text-center text-sm text-muted-foreground">
-                      This request is {active.status}. No further action needed.
-                    </div>
-                  )}
                 </div>
               </div>
-            </>
+            </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -344,130 +416,5 @@ function Field({ label, value }: { label: string; value: string }) {
       <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
       <div className="mt-0.5 text-sm font-medium capitalize">{value}</div>
     </div>
-  );
-}
-
-type AssistCategory = "medical" | "burial" | "calamity" | "educational" | "other";
-
-function NewAssistanceModal({ members }: { members: MemberOption[] }) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [memberId, setMemberId] = useState("");
-  const [category, setCategory] = useState<AssistCategory | "">("");
-  const [amount, setAmount] = useState("");
-  const [reason, setReason] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  function reset() {
-    setMemberId("");
-    setCategory("");
-    setAmount("");
-    setReason("");
-  }
-
-  async function submit() {
-    const value = parseFloat(amount);
-    if (!memberId) return toast.error("Select a member.");
-    if (!category) return toast.error("Select a category.");
-    if (!value || value <= 0) return toast.error("Enter a valid amount.");
-    if (!reason.trim()) return toast.error("Provide a reason.");
-    setSaving(true);
-    try {
-      const created = await createAssistance({
-        data: { memberId, category, amount: value, reason: reason.trim() },
-      });
-      toast.success("Request submitted", { description: `Assigned ${created.requestNo}` });
-      setOpen(false);
-      reset();
-      await router.invalidate();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to submit request.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (!o) reset();
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" />
-          New request
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>New assistance request</DialogTitle>
-          <DialogDescription>
-            File a request on behalf of a member. It enters the review queue.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2">
-          <div className="grid gap-1.5 sm:col-span-2">
-            <Label>Member</Label>
-            <Select value={memberId} onValueChange={setMemberId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select member" />
-              </SelectTrigger>
-              <SelectContent>
-                {members.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.firstName} {m.lastName} · {m.memberNo}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Category</Label>
-            <Select value={category} onValueChange={(v) => setCategory(v as AssistCategory)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="medical">Medical</SelectItem>
-                <SelectItem value="burial">Burial</SelectItem>
-                <SelectItem value="calamity">Calamity</SelectItem>
-                <SelectItem value="educational">Educational</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Amount (PHP)</Label>
-            <Input
-              type="number"
-              min={0}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-1.5 sm:col-span-2">
-            <Label>Reason / description</Label>
-            <Textarea
-              rows={4}
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Explain the situation and how the assistance will be used…"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
-            Cancel
-          </Button>
-          <Button onClick={submit} disabled={saving} className="gap-1.5">
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-            Submit request
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }

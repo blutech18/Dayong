@@ -8,7 +8,7 @@ import { getNotifications, markAllNotificationsRead } from "@/server/functions/n
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_shell/notifications")({
-  head: () => ({ meta: [{ title: "Notifications — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Notifications — Pagtukaw Lifecare" }] }),
   loader: () => getNotifications(),
   component: NotificationsPage,
 });

@@ -1,4 +1,4 @@
-// Shared legal copy for DAYONG. Used by the standalone /terms and /privacy
+// Shared legal copy for Pagtukaw Lifecare Philippines. Used by the standalone /terms and /privacy
 // pages and by the signup consent modal so the wording stays in sync.
 
 export const LEGAL_EFFECTIVE_DATE = "July 1, 2026";
@@ -26,19 +26,19 @@ function Document({ intro, sections }: { intro: string; sections: Section[] }) {
 export function TermsContent() {
   return (
     <Document
-      intro="These Terms of Service govern your access to and use of the DAYONG Member Assistance & Collection Management platform. By creating an account you agree to be bound by these terms."
+      intro="These Terms of Service govern your access to and use of the Pagtukaw Lifecare Philippines Member Assistance & Collection Management platform. By creating an account you agree to be bound by these terms."
       sections={[
         {
           heading: "Acceptance of Terms",
           body: [
-            "By registering for or using DAYONG, you confirm that you are authorized to act on behalf of your community organization and that you accept these terms in full.",
+            "By registering for or using Pagtukaw Lifecare Philippines, you confirm that you are authorized to act on behalf of your community organization and that you accept these terms in full.",
             "If you do not agree with any part of these terms, you must not create an account or use the platform.",
           ],
         },
         {
           heading: "Use of the Platform",
           body: [
-            "DAYONG is provided to help mutual-aid organizations manage member records, contributions, collection events, assistance requests, and financial reporting.",
+            "Pagtukaw Lifecare Philippines is provided to help mutual-aid organizations manage member records, contributions, collection events, assistance requests, and financial reporting.",
             "You agree to use the platform only for lawful purposes and in accordance with the internal policies of your organization.",
           ],
         },
@@ -53,7 +53,7 @@ export function TermsContent() {
           heading: "Member and Financial Data",
           body: [
             "You are responsible for the accuracy of the member and financial information you enter. Contribution ledgers and assistance records should reflect real transactions approved by your organization.",
-            "DAYONG maintains audit logs to support transparency and accountability across staff roles.",
+            "Pagtukaw Lifecare Philippines maintains audit logs to support transparency and accountability across staff roles.",
           ],
         },
         {
@@ -65,13 +65,13 @@ export function TermsContent() {
         {
           heading: "Service Availability",
           body: [
-            "We aim to keep DAYONG available and reliable, but the service may be interrupted for maintenance, updates, or circumstances beyond our control. Scheduled maintenance will be communicated where possible.",
+            "We aim to keep Pagtukaw Lifecare Philippines available and reliable, but the service may be interrupted for maintenance, updates, or circumstances beyond our control. Scheduled maintenance will be communicated where possible.",
           ],
         },
         {
           heading: "Limitation of Liability",
           body: [
-            'DAYONG is provided on an "as is" and "as available" basis. To the fullest extent permitted by law, we are not liable for indirect or consequential losses arising from your use of the platform.',
+            'Pagtukaw Lifecare Philippines is provided on an "as is" and "as available" basis. To the fullest extent permitted by law, we are not liable for indirect or consequential losses arising from your use of the platform.',
           ],
         },
         {
@@ -94,7 +94,7 @@ export function TermsContent() {
 export function PrivacyContent() {
   return (
     <Document
-      intro="This Privacy Policy explains how DAYONG collects, uses, and protects information when your organization uses the Member Assistance & Collection Management platform."
+      intro="This Privacy Policy explains how Pagtukaw Lifecare Philippines collects, uses, and protects information when your organization uses the Member Assistance & Collection Management platform."
       sections={[
         {
           heading: "Information We Collect",

@@ -32,7 +32,7 @@ import { getBackup, restoreBackup } from "@/server/functions/backup";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_shell/settings")({
-  head: () => ({ meta: [{ title: "Settings — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Settings — Pagtukaw Lifecare" }] }),
   loader: () => getSettings(),
   component: SettingsPage,
 });
@@ -237,7 +237,7 @@ function BackupSection() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `dayong-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `Pagtukaw Lifecare Philippines-backup-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success("Backup downloaded.");

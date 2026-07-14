@@ -30,7 +30,7 @@ import { getMyAssistance, submitMyAssistance } from "@/server/functions/member-p
 type Category = "medical" | "burial" | "calamity" | "educational" | "other";
 
 export const Route = createFileRoute("/member/assistance")({
-  head: () => ({ meta: [{ title: "My Assistance — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "My Assistance — Pagtukaw Lifecare" }] }),
   loader: () => getMyAssistance(),
   component: MemberAssistance,
 });

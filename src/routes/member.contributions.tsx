@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatPHP, formatDate } from "@/lib/format";
 import { getMyContributions } from "@/server/functions/member-portal";
 
 export const Route = createFileRoute("/member/contributions")({
-  head: () => ({ meta: [{ title: "My Contributions — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "My Contributions — Pagtukaw Lifecare" }] }),
   loader: () => getMyContributions(),
   component: MemberContributions,
 });
@@ -18,6 +20,7 @@ const statusTone: Record<string, string> = {
 
 function MemberContributions() {
   const contributions = Route.useLoaderData();
+  const { page, setPage, paged, pageSize, total } = usePagination(contributions);
 
   return (
     <div className="space-y-6">
@@ -66,7 +69,7 @@ function MemberContributions() {
                   </td>
                 </tr>
               )}
-              {contributions.map((c) => (
+              {paged.map((c) => (
                 <tr key={c.id} className="border-b transition-colors hover:bg-muted/50">
                   <td className="p-4 align-middle">{formatDate(c.paidAt)}</td>
                   <td className="p-4 align-middle capitalize">{c.method}</td>
@@ -87,6 +90,13 @@ function MemberContributions() {
             </tbody>
           </table>
         </div>
+        <TablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          label="contributions"
+        />
       </div>
     </div>
   );

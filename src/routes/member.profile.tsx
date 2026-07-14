@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { getMyMemberProfile, updateMyMemberProfile } from "@/server/functions/member-portal";
 
 export const Route = createFileRoute("/member/profile")({
-  head: () => ({ meta: [{ title: "My Profile — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "My Profile — Pagtukaw Lifecare" }] }),
   loader: () => getMyMemberProfile(),
   component: MemberProfile,
 });

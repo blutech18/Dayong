@@ -9,7 +9,7 @@ import { ConsentDialog } from "@/components/consent-dialog";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/signup")({
-  head: () => ({ meta: [{ title: "Create account — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Create account — Pagtukaw Lifecare" }] }),
   component: SignupPage,
 });
 
@@ -24,7 +24,7 @@ function SignupPage() {
       <div>
         <h1 className="font-display text-3xl font-semibold tracking-tight">Create your account</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Join the DAYONG community management platform.
+          Join the Pagtukaw Lifecare Philippines community management platform.
         </p>
       </div>
 
@@ -85,7 +85,7 @@ function SignupPage() {
             }}
           />
           <span className="leading-relaxed">
-            I agree to the DAYONG{" "}
+            I agree to the Pagtukaw Lifecare Philippines{" "}
             <Link
               to="/terms"
               target="_blank"

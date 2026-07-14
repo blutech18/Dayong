@@ -6,7 +6,7 @@ import { formatPHP, formatDate } from "@/lib/format";
 import { getMemberOverview } from "@/server/functions/member-portal";
 
 export const Route = createFileRoute("/member/dashboard")({
-  head: () => ({ meta: [{ title: "Member Dashboard — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Member Dashboard — Pagtukaw Lifecare" }] }),
   loader: () => getMemberOverview(),
   component: MemberDashboard,
 });

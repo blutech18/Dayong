@@ -15,11 +15,13 @@ import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { StatCard } from "@/components/stat-card";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatPHP, formatDate, formatDateTime } from "@/lib/format";
 import { getCollectionEventDetail } from "@/server/functions/events";
 
 export const Route = createFileRoute("/_shell/collection-events/$id")({
-  head: () => ({ meta: [{ title: "Collection Event — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Collection Event — Pagtukaw Lifecare" }] }),
   loader: async ({ params }) => {
     const detail = await getCollectionEventDetail({ data: { id: params.id } });
     if (!detail) throw notFound();
@@ -47,6 +49,7 @@ function EventNotFound() {
 
 function EventDetail() {
   const { event, contributions: eventContribs, paidMembers } = Route.useLoaderData();
+  const { page, setPage, paged, pageSize, total } = usePagination(eventContribs);
   const pct =
     event.targetAmount > 0 ? Math.round((event.collectedAmount / event.targetAmount) * 100) : 0;
 
@@ -159,7 +162,7 @@ function EventDetail() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {eventContribs.map((c) => (
+                  {paged.map((c) => (
                     <tr key={c.id} className="hover:bg-muted/40">
                       <td className="px-4 py-3 font-mono text-xs">{c.receiptNo}</td>
                       <td className="px-4 py-3">
@@ -180,6 +183,13 @@ function EventDetail() {
                 </tbody>
               </table>
             </div>
+            <TablePagination
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              onPageChange={setPage}
+              label="payments"
+            />
           </div>
         </div>
 

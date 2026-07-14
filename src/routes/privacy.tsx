@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PrivacyContent, LEGAL_EFFECTIVE_DATE } from "@/lib/legal-content";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({ meta: [{ title: "Privacy Policy — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Privacy Policy — Pagtukaw Lifecare" }] }),
   component: PrivacyPage,
 });
 
@@ -24,9 +24,15 @@ function PrivacyPage() {
     <div className="min-h-screen bg-muted/30 px-4 py-10 sm:px-6">
       <div className="mx-auto w-full max-w-2xl">
         <div className="mb-6 flex items-center gap-3">
-          <img src="/dayong.png" alt="DAYONG logo" className="h-10 w-10 shrink-0 object-contain" />
+          <img
+            src="/dayong.png"
+            alt="Pagtukaw Lifecare Philippines logo"
+            className="h-10 w-10 shrink-0 object-contain"
+          />
           <div>
-            <div className="font-display text-base font-semibold tracking-tight">DAYONG</div>
+            <div className="font-display text-base font-semibold tracking-tight">
+              Pagtukaw Lifecare Philippines
+            </div>
             <div className="text-xs text-muted-foreground">Member Assistance System</div>
           </div>
         </div>

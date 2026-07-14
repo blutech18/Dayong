@@ -13,7 +13,7 @@ export interface EmailMessage {
 
 export async function sendEmail(msg: EmailMessage): Promise<{ ok: boolean; skipped?: boolean }> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "DAYONG <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM ?? "Pagtukaw Lifecare Philippines <onboarding@resend.dev>";
 
   if (!apiKey) {
     console.log(`[email:noop] to=${msg.to} subject="${msg.subject}"`);
@@ -46,6 +46,6 @@ export function emailTemplate(heading: string, bodyHtml: string): string {
     <h2 style="color:#0f172a;font-size:18px">${heading}</h2>
     <div style="color:#334155;font-size:14px;line-height:1.6">${bodyHtml}</div>
     <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0" />
-    <p style="color:#94a3b8;font-size:12px">DAYONG Member Assistance &amp; Collection Management</p>
+    <p style="color:#94a3b8;font-size:12px">Pagtukaw Lifecare Philippines · Member Assistance &amp; Collection Management</p>
   </div>`;
 }

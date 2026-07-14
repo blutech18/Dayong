@@ -94,7 +94,7 @@ export function AppTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
 
       <nav className="hidden min-w-0 items-center gap-1.5 text-sm text-sidebar-foreground/70 dark:text-muted-foreground md:flex">
         <Link to="/dashboard" className="hover:text-sidebar-foreground dark:hover:text-foreground">
-          DAYONG
+          Pagtukaw Lifecare
         </Link>
         {crumbs.length > 0 && (
           <>
@@ -150,8 +150,11 @@ export function AppTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
               )}
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0 flex flex-col border-l">
-            <div className="flex items-center gap-2 px-6 py-4 border-b">
+          <SheetContent
+            side="right"
+            className="w-[400px] sm:w-[540px] p-0 flex flex-col border-l [&>button]:top-6"
+          >
+            <div className="flex items-center gap-2 px-6 h-16 border-b">
               <SheetTitle className="text-base font-semibold">Notifications</SheetTitle>
               <Badge variant="secondary" className="text-[10px]">
                 {unread} new

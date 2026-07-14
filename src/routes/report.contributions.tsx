@@ -6,7 +6,10 @@ import { getContributionsReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/contributions")({
   head: () => ({
-    meta: [{ title: "Contribution Report — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Contribution Report — Pagtukaw Lifecare" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   beforeLoad: () => requireAuth(),
   loader: () => getContributionsReport(),

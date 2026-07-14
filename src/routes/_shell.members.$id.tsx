@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/dialog";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatPHP, formatDate, formatDateTime } from "@/lib/format";
 import {
   getMemberDetail,
@@ -51,8 +53,8 @@ export const Route = createFileRoute("/_shell/members/$id")({
     meta: [
       {
         title: loaderData
-          ? `${loaderData.member.firstName} ${loaderData.member.lastName} — DAYONG`
-          : "Member — DAYONG",
+          ? `${loaderData.member.firstName} ${loaderData.member.lastName} — Pagtukaw Lifecare`
+          : "Member — Pagtukaw Lifecare",
       },
     ],
   }),
@@ -67,8 +69,9 @@ function MemberDetail() {
   const router = useRouter();
   const [archiving, setArchiving] = useState(false);
   const [enabling, setEnabling] = useState(false);
-  const memberContribs = contributions.slice(0, 8);
   const memberReqs = assistance;
+  const contribPage = usePagination(contributions, 8);
+  const assistPage = usePagination(memberReqs, 8);
 
   async function handleEnablePortal() {
     setEnabling(true);
@@ -160,7 +163,9 @@ function MemberDetail() {
             <div className="rounded-xl bg-gradient-to-br from-primary via-primary to-secondary p-5 text-primary-foreground">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest opacity-70">DAYONG</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-70">
+                    Pagtukaw Lifecare Philippines
+                  </div>
                   <div className="mt-1 font-display text-lg font-semibold leading-tight">
                     {member.firstName}
                     <br />
@@ -234,7 +239,7 @@ function MemberDetail() {
 
               <TabsContent value="timeline" className="p-6">
                 <ol className="relative space-y-6 border-l border-border pl-6">
-                  {memberContribs.slice(0, 5).map((c) => (
+                  {contributions.slice(0, 5).map((c) => (
                     <li key={c.id} className="relative">
                       <span className="absolute -left-[27px] top-1 grid h-4 w-4 place-items-center rounded-full border-2 border-background bg-primary" />
                       <div className="text-sm font-medium">Contribution received</div>
@@ -270,7 +275,7 @@ function MemberDetail() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                      {memberContribs.map((c) => (
+                      {contribPage.paged.map((c) => (
                         <tr key={c.id} className="hover:bg-muted/40">
                           <td className="px-6 py-3 font-medium">{c.receiptNo}</td>
                           <td className="px-3 py-3 text-xs text-muted-foreground">
@@ -288,6 +293,13 @@ function MemberDetail() {
                     </tbody>
                   </table>
                 </div>
+                <TablePagination
+                  page={contribPage.page}
+                  pageSize={contribPage.pageSize}
+                  total={contribPage.total}
+                  onPageChange={contribPage.setPage}
+                  label="contributions"
+                />
               </TabsContent>
 
               <TabsContent value="assistance" className="p-0">
@@ -314,7 +326,7 @@ function MemberDetail() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {memberReqs.map((r) => (
+                        {assistPage.paged.map((r) => (
                           <tr key={r.id} className="hover:bg-muted/40">
                             <td className="px-6 py-3 font-medium">{r.requestNo}</td>
                             <td className="px-3 py-3 capitalize text-xs">{r.category}</td>
@@ -332,6 +344,15 @@ function MemberDetail() {
                       </tbody>
                     </table>
                   </div>
+                )}
+                {memberReqs.length > 0 && (
+                  <TablePagination
+                    page={assistPage.page}
+                    pageSize={assistPage.pageSize}
+                    total={assistPage.total}
+                    onPageChange={assistPage.setPage}
+                    label="requests"
+                  />
                 )}
               </TabsContent>
 

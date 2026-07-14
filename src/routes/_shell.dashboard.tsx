@@ -1,4 +1,6 @@
+import { forwardRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 import {
   Users,
   UserCheck,
@@ -38,11 +40,18 @@ import { StatCard } from "@/components/stat-card";
 import { formatPHP, formatDate } from "@/lib/format";
 import { getDashboard } from "@/server/functions/dashboard";
 import { cn } from "@/lib/utils";
+import {
+  RecordContributionModal,
+  NewMemberModal,
+  NewAssistanceModal,
+  NewAnnouncementModal,
+  CreateEventModal,
+} from "@/components/action-modals";
 
 export const Route = createFileRoute("/_shell/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — DAYONG" },
+      { title: "Dashboard — Pagtukaw Lifecare" },
       {
         name: "description",
         content: "Overview of members, collections, assistance and financial health.",
@@ -75,9 +84,13 @@ function DashboardPage() {
             <Button variant="outline" size="sm" className="gap-1.5">
               <Download className="h-4 w-4" /> Export
             </Button>
-            <Button size="sm" className="gap-1.5">
-              <Plus className="h-4 w-4" /> Record contribution
-            </Button>
+            <RecordContributionModal
+              trigger={
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" /> Record contribution
+                </Button>
+              }
+            />
           </>
         }
       />
@@ -344,25 +357,24 @@ function DashboardPage() {
             <h3 className="font-display text-base font-semibold">Quick actions</h3>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: "New member", to: "/members", icon: Users },
-              { label: "Record payment", to: "/contributions", icon: Wallet },
-              { label: "New request", to: "/assistance", icon: HeartHandshake },
-              { label: "Schedule event", to: "/collection-events", icon: Calendar },
-              { label: "Announcement", to: "/announcements", icon: Megaphone },
-              { label: "View reports", to: "/reports", icon: TrendingUp },
-            ].map((a) => (
-              <Link
-                key={a.label}
-                to={a.to}
-                className="group flex flex-col items-start gap-2 rounded-xl border border-border bg-background p-3 transition hover:border-primary/40 hover:bg-accent"
-              >
-                <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <a.icon className="h-4 w-4" />
-                </div>
-                <div className="text-xs font-medium leading-tight">{a.label}</div>
-              </Link>
-            ))}
+            <NewMemberModal trigger={<QuickAction label="New member" icon={Users} />} />
+            <RecordContributionModal
+              trigger={<QuickAction label="Record payment" icon={Wallet} />}
+            />
+            <NewAssistanceModal
+              trigger={<QuickAction label="New request" icon={HeartHandshake} />}
+            />
+            <CreateEventModal trigger={<QuickAction label="Schedule event" icon={Calendar} />} />
+            <NewAnnouncementModal trigger={<QuickAction label="Announcement" icon={Megaphone} />} />
+            <Link
+              to="/reports"
+              className="group flex flex-col items-start gap-2 rounded-xl border border-border bg-background p-3 transition hover:border-primary/40 hover:bg-accent"
+            >
+              <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary">
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="text-xs font-medium leading-tight">View reports</div>
+            </Link>
           </div>
         </div>
       </div>
@@ -498,6 +510,24 @@ function DashboardPage() {
     </div>
   );
 }
+
+const QuickAction = forwardRef<
+  HTMLButtonElement,
+  { label: string; icon: LucideIcon } & React.ButtonHTMLAttributes<HTMLButtonElement>
+>(({ label, icon: Icon, ...props }, ref) => (
+  <button
+    ref={ref}
+    type="button"
+    className="group flex flex-col items-start gap-2 rounded-xl border border-border bg-background p-3 text-left transition hover:border-primary/40 hover:bg-accent"
+    {...props}
+  >
+    <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary">
+      <Icon className="h-4 w-4" />
+    </div>
+    <div className="text-xs font-medium leading-tight">{label}</div>
+  </button>
+));
+QuickAction.displayName = "QuickAction";
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {

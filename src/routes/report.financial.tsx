@@ -7,7 +7,10 @@ import { getFinancialReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/financial")({
   head: () => ({
-    meta: [{ title: "Financial Report — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "Financial Report — Pagtukaw Lifecare" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   beforeLoad: () => requireAuth(),
   loader: () => getFinancialReport(),
@@ -49,7 +52,9 @@ function FinancialReportPage() {
                 <Sparkles className="h-6 w-6" />
               </div>
               <div>
-                <div className="font-display text-xl font-bold tracking-tight">DAYONG</div>
+                <div className="font-display text-xl font-bold tracking-tight">
+                  Pagtukaw Lifecare Philippines
+                </div>
                 <div className="text-xs text-slate-600">
                   Member Assistance & Collection Management
                 </div>

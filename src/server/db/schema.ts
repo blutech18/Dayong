@@ -313,7 +313,7 @@ export const notifications = pgTable("notifications", {
 
 export const appSettings = pgTable("app_settings", {
   id: text("id").primaryKey().default("singleton"),
-  orgName: text("org_name").notNull().default("DAYONG"),
+  orgName: text("org_name").notNull().default("Pagtukaw Lifecare Philippines"),
   registrationNo: text("registration_no"),
   contactEmail: text("contact_email"),
   phone: text("phone"),

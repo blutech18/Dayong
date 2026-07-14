@@ -35,7 +35,7 @@ const categoryTone = {
 } as const;
 
 export const Route = createFileRoute("/_shell/audit")({
-  head: () => ({ meta: [{ title: "Audit Logs — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Audit Logs — Pagtukaw Lifecare" }] }),
   loader: () => getAuditLogs(),
   component: AuditPage,
 });

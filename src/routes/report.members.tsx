@@ -6,7 +6,7 @@ import { getMembersReport } from "@/server/functions/reports";
 
 export const Route = createFileRoute("/report/members")({
   head: () => ({
-    meta: [{ title: "Member Report — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Member Report — Pagtukaw Lifecare" }, { name: "robots", content: "noindex" }],
   }),
   beforeLoad: () => requireAuth(),
   loader: () => getMembersReport(),

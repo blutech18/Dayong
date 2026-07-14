@@ -15,7 +15,7 @@ import { getSearchDataset } from "@/server/functions/search";
 
 export const Route = createFileRoute("/_shell/search")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
-  head: () => ({ meta: [{ title: "Search — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Search — Pagtukaw Lifecare" }] }),
   loader: () => getSearchDataset(),
   component: SearchPage,
 });
@@ -63,7 +63,7 @@ function SearchPage() {
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search DAYONG…"
+            placeholder="Search Pagtukaw Lifecare Philippines…"
             className="h-12 pl-11 text-base"
           />
         </div>

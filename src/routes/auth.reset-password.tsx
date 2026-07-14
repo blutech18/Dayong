@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth/reset-password")({
-  head: () => ({ meta: [{ title: "Set new password — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Set new password — Pagtukaw Lifecare" }] }),
   component: ResetPage,
 });
 

@@ -5,7 +5,7 @@ import { formatPHP, formatDateTime } from "@/lib/format";
 import { getReceipt } from "@/server/functions/contributions";
 
 export const Route = createFileRoute("/receipt/$id")({
-  head: () => ({ meta: [{ title: "Official Receipt — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Official Receipt — Pagtukaw Lifecare" }] }),
   loader: async ({ params }) => {
     const receipt = await getReceipt({ data: params.id });
     if (!receipt) throw notFound();
@@ -45,7 +45,9 @@ function ReceiptPage() {
                 <Sparkles className="h-6 w-6" />
               </div>
               <div>
-                <div className="font-display text-xl font-bold tracking-tight">DAYONG</div>
+                <div className="font-display text-xl font-bold tracking-tight">
+                  Pagtukaw Lifecare Philippines
+                </div>
                 <div className="text-xs text-slate-600">
                   Member Assistance & Collection Management
                 </div>
@@ -145,8 +147,8 @@ function ReceiptPage() {
           <div className="mt-8 border-t border-slate-200 pt-4 text-center text-[10px] text-slate-500">
             This is a computer-generated receipt. Please retain for your records.
             <br />
-            DAYONG Member Assistance & Collection Management System · Generated{" "}
-            {formatDateTime(new Date().toISOString())}
+            Pagtukaw Lifecare Philippines Member Assistance & Collection Management System ·
+            Generated {formatDateTime(new Date().toISOString())}
           </div>
         </div>
       </div>

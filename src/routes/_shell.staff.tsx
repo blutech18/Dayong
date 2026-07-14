@@ -39,6 +39,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatDate } from "@/lib/format";
 import {
   getStaff,
@@ -53,7 +55,7 @@ import { toast } from "sonner";
 type Role = StaffDTO["role"];
 
 export const Route = createFileRoute("/_shell/staff")({
-  head: () => ({ meta: [{ title: "Staff & Roles — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Staff & Roles — Pagtukaw Lifecare" }] }),
   loader: () => getStaff(),
   component: StaffPage,
 });
@@ -113,6 +115,7 @@ function StaffPage() {
     if (!q) return true;
     return (s.name + s.email).toLowerCase().includes(q.toLowerCase());
   });
+  const { page, setPage, paged, pageSize, total } = usePagination(filtered);
 
   const activeCount = staffMembers.filter((s) => s.status === "active").length;
   const invitedCount = staffMembers.filter((s) => s.status === "invited").length;
@@ -246,20 +249,23 @@ function StaffPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl border border-border bg-card">
+        <div className="flex flex-col lg:col-span-2 rounded-2xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border p-4">
             <h3 className="font-display text-sm font-semibold">Team members</h3>
             <div className="relative w-64">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search team..."
                 className="h-9 w-full rounded-lg border border-input bg-muted/30 pl-9 pr-3 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring/40"
               />
             </div>
           </div>
-          <div className="scroll-thin overflow-x-auto">
+          <div className="scroll-thin flex-1 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -271,7 +277,7 @@ function StaffPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map((s) => (
+                {paged.map((s) => (
                   <tr key={s.id} className="group hover:bg-muted/40">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -341,6 +347,13 @@ function StaffPage() {
               </tbody>
             </table>
           </div>
+          <TablePagination
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={setPage}
+            label="staff"
+          />
         </div>
 
         <div className="rounded-2xl border border-border bg-card">

@@ -34,6 +34,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PageHeader } from "@/components/page-header";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { formatDate } from "@/lib/format";
 import {
   getDocuments,
@@ -53,7 +55,7 @@ const CATEGORIES = [
 ];
 
 export const Route = createFileRoute("/_shell/documents")({
-  head: () => ({ meta: [{ title: "Documents — DAYONG" }] }),
+  head: () => ({ meta: [{ title: "Documents — Pagtukaw Lifecare" }] }),
   loader: () => getDocuments(),
   component: DocumentsPage,
 });
@@ -76,6 +78,7 @@ function DocumentsPage() {
   const [q, setQ] = useState("");
 
   const filtered = q ? files.filter((f) => f.name.toLowerCase().includes(q.toLowerCase())) : files;
+  const { page, setPage, paged, pageSize, total } = usePagination(filtered, 12);
 
   async function handleDownload(id: string) {
     try {
@@ -129,7 +132,10 @@ function DocumentsPage() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search files…"
                 className="h-9 w-64 rounded-lg border border-input bg-muted/30 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
               />
@@ -165,7 +171,7 @@ function DocumentsPage() {
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {filtered.map((f) => (
+            {paged.map((f) => (
               <button
                 key={f.id}
                 onClick={() => handleDownload(f.id)}
@@ -195,7 +201,7 @@ function DocumentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map((f) => (
+                {paged.map((f) => (
                   <tr key={f.id} className="hover:bg-muted/40">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
@@ -239,6 +245,13 @@ function DocumentsPage() {
             </table>
           </div>
         )}
+        <TablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          label="files"
+        />
       </div>
     </div>
   );

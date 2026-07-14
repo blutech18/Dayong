@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/forbidden")({
   head: () => ({
-    meta: [{ title: "Access denied — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Access denied — Pagtukaw Lifecare" }, { name: "robots", content: "noindex" }],
   }),
   component: ForbiddenPage,
 });

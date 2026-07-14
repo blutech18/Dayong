@@ -11,8 +11,14 @@ function AuthLayout() {
       <div className="flex w-full flex-col bg-background px-6 py-6 sm:px-10 lg:w-[45%] lg:py-10 xl:w-[40%]">
         <div className="mb-auto">
           <Link to="/dashboard" className="flex items-center gap-2.5">
-            <img src="/dayong.png" alt="DAYONG logo" className="h-9 w-9 object-contain" />
-            <div className="font-display text-base font-semibold tracking-tight">DAYONG</div>
+            <img
+              src="/dayong.png"
+              alt="Pagtukaw Lifecare logo"
+              className="h-9 w-9 object-contain"
+            />
+            <div className="font-display text-base font-semibold tracking-tight">
+              Pagtukaw Lifecare
+            </div>
           </Link>
         </div>
 
@@ -23,7 +29,8 @@ function AuthLayout() {
         </div>
 
         <div className="mt-auto text-xs text-muted-foreground">
-          © {new Date().getFullYear()} DAYONG · Member Assistance & Collection Management
+          © {new Date().getFullYear()} Pagtukaw Lifecare Philippines · Member Assistance &
+          Collection Management
         </div>
       </div>
 

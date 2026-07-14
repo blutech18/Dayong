@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/maintenance")({
   head: () => ({
-    meta: [{ title: "System Maintenance — DAYONG" }, { name: "robots", content: "noindex" }],
+    meta: [
+      { title: "System Maintenance — Pagtukaw Lifecare" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   component: MaintenancePage,
 });
@@ -18,8 +21,8 @@ function MaintenancePage() {
         </div>
         <h1 className="mt-4 font-display text-2xl font-bold tracking-tight">We'll be right back</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          DAYONG is undergoing scheduled maintenance. Contributions, requests, and reports will be
-          available again shortly. Thank you for your patience.
+          Pagtukaw Lifecare Philippines is undergoing scheduled maintenance. Contributions,
+          requests, and reports will be available again shortly. Thank you for your patience.
         </p>
         <div className="mt-6 flex justify-center gap-2">
           <Button asChild variant="outline">

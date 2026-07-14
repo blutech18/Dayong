@@ -34,7 +34,9 @@ function MemberShell() {
             <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground font-bold">
               D
             </div>
-            <span className="font-display font-semibold tracking-tight">DAYONG Member Portal</span>
+            <span className="font-display font-semibold tracking-tight">
+              Pagtukaw Lifecare Philippines Member Portal
+            </span>
           </div>
           <button
             type="button"

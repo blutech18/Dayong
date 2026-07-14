@@ -45,7 +45,9 @@ export function ShortcutsDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>Move around DAYONG without leaving the keyboard.</DialogDescription>
+          <DialogDescription>
+            Move around Pagtukaw Lifecare Philippines without leaving the keyboard.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-5 sm:grid-cols-2">
           {groups.map((g) => (

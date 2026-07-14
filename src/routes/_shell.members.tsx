@@ -3,15 +3,12 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   Search,
-  Plus,
   Download,
   Filter,
   Users,
   UserCheck,
   UserX,
   Clock,
-  ChevronLeft,
-  ChevronRight,
   Mail,
   Phone,
   ArrowUpDown,
@@ -19,6 +16,8 @@ import {
   Wallet,
   Loader2,
 } from "lucide-react";
+import { TablePagination } from "@/components/table-pagination";
+import { usePagination } from "@/hooks/use-pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,13 +35,14 @@ import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { StatCard } from "@/components/stat-card";
 import { formatPHP, formatDate } from "@/lib/format";
-import { getMembersPage, updateMember, createMember } from "@/server/functions/members";
+import { getMembersPage, updateMember } from "@/server/functions/members";
+import { NewMemberModal } from "@/components/action-modals";
 import type { MemberDTO } from "@/server/dto";
 
 export const Route = createFileRoute("/_shell/members")({
   head: () => ({
     meta: [
-      { title: "Members — DAYONG" },
+      { title: "Members — Pagtukaw Lifecare" },
       {
         name: "description",
         content: "Manage member records, contributions, and assistance history.",
@@ -57,8 +57,6 @@ function MembersPage() {
   const { members, stats } = Route.useLoaderData();
   const [tab, setTab] = useState<"all" | "active" | "inactive" | "pending" | "archived">("all");
   const [q, setQ] = useState("");
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
 
   const filtered = useMemo(() => {
     return members.filter((m) => {
@@ -71,8 +69,7 @@ function MembersPage() {
     });
   }, [members, tab, q]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const { page, setPage, paged, pageSize, total } = usePagination(filtered);
 
   return (
     <div className="space-y-6">
@@ -214,40 +211,13 @@ function MembersPage() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 text-sm">
-          <div className="text-xs text-muted-foreground">
-            Showing <span className="font-medium text-foreground">{(page - 1) * pageSize + 1}</span>
-            –
-            <span className="font-medium text-foreground">
-              {Math.min(page * pageSize, filtered.length)}
-            </span>{" "}
-            of <span className="font-medium text-foreground">{filtered.length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="gap-1"
-            >
-              <ChevronLeft className="h-4 w-4" /> Prev
-            </Button>
-            <div className="text-xs text-muted-foreground">
-              Page {page} of {totalPages}
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={page === totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="gap-1"
-            >
-              Next <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <TablePagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          label="members"
+        />
       </div>
     </div>
   );
@@ -393,108 +363,6 @@ function MemberActionsModal({ member }: { member: MemberDTO }) {
               </Button>
             </>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function NewMemberModal() {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-  });
-
-  const set = (patch: Partial<typeof form>) => setForm((f) => ({ ...f, ...patch }));
-
-  function reset() {
-    setForm({ firstName: "", lastName: "", email: "", phone: "", address: "" });
-  }
-
-  async function submit() {
-    if (!form.firstName.trim() || !form.lastName.trim()) {
-      return toast.error("First and last name are required.");
-    }
-    setSaving(true);
-    try {
-      const member = await createMember({
-        data: {
-          firstName: form.firstName.trim(),
-          lastName: form.lastName.trim(),
-          email: form.email.trim(),
-          phone: form.phone.trim(),
-          address: form.address.trim(),
-        },
-      });
-      toast.success("Member registered", { description: `${member.memberNo} created.` });
-      setOpen(false);
-      reset();
-      await router.invalidate();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to register member.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (!o) reset();
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" /> New member
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Register new member</DialogTitle>
-          <DialogDescription>The record starts as pending until verified.</DialogDescription>
-        </DialogHeader>
-        <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2">
-          <div className="grid gap-1.5">
-            <Label>First name</Label>
-            <Input value={form.firstName} onChange={(e) => set({ firstName: e.target.value })} />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Last name</Label>
-            <Input value={form.lastName} onChange={(e) => set({ lastName: e.target.value })} />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Email</Label>
-            <Input
-              type="email"
-              value={form.email}
-              onChange={(e) => set({ email: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Phone</Label>
-            <Input value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
-          </div>
-          <div className="grid gap-1.5 sm:col-span-2">
-            <Label>Address</Label>
-            <Input value={form.address} onChange={(e) => set({ address: e.target.value })} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
-            Cancel
-          </Button>
-          <Button onClick={submit} disabled={saving} className="gap-1.5">
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-            Register member
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
